@@ -7,7 +7,7 @@ void initInputs() {
   pinMode(batchSelectionLEDPin, OUTPUT);
   digitalWrite(batchSelectionLEDPin, LOW);
   pinMode(stopButtonPin, INPUT_PULLUP);
-  
+
   for (uint8_t i = 0; i < NBINS; i++) {
     pinMode(binSelectionButtonPin[i], INPUT_PULLUP);
     pinMode(binSelectionLEDPin[i], OUTPUT);
@@ -22,7 +22,7 @@ void initInputs() {
 
 void handleInputs() {
   static long oldPosition;
-  static uint32_t lastPress;  
+  static uint32_t lastPress;
   static bool settingBatch;
   static ProcessStates stateWhenInterrupted;
   static uint32_t lastStopPressed;
@@ -132,6 +132,26 @@ void handleInputs() {
         processState = stateWhenInterrupted;                // Continue where we were.
         strcpy_P(systemStatus, PSTR("                    "));
         updateDisplay = true;
+      }
+      break;
+
+    case COMPLETED:
+      bool action = false;
+      if (digitalRead(batchSelectionButtonPin) == LOW ||    // Batch selection button pressed, or
+          digitalRead(startButtonPin) == LOW ||             // Start button pressed, or
+          digitalRead(stopButtonPin) == LOW ||              // Stop button pressed, or
+          digitalRead(encoderPushPin) == LOW ||             // encoder button pushed, or
+          encoderPosition != oldPosition) {                 // encoder moved:
+        action = true;                                      // User action!
+      }
+      for (uint8_t i = 0; i < NBINS; i++) {                 // Check for bin selection button presses.
+        if (digitalRead(binSelectionButtonPin[i]) == LOW) { // We have a button pressed.
+          action = true;
+        }
+      }
+      if (action) {                                         // User did something: clear complete status.
+        processState = SET_WEIGHTS;
+        digitalWrite(completeLED, LOW);                     // Switch off the "complete" LED.
       }
       break;
   }

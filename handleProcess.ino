@@ -2,7 +2,7 @@ void handleProcess() {
   static float startWeight;                                 // Scale's weight indication at the start of a fill process.
   static uint8_t fillingBin;                                // Which bin to fill.
   switch (processState) {
-    case SET_WEIGHTS:                                       // User can set weights and number of batches.
+    case SET_WEIGHTS:                                       // User is setting weights and number of batches. Nothing to do here.
       break;
 
     case STANDBY:                                           // Waiting for INPUT1 to go HIGH.
@@ -50,12 +50,13 @@ void handleProcess() {
       if (millis() - lastFillCompleteTime > BATCH_DISCHARGE_TIME) { // If open long enough,
         digitalWrite(dischargeValvePin, LOW);               // Close the valve again.
         nBatch++;                                           // Go to the next batch.
-        if (nBatch == nBatches) {                           // If we're donw,
-          processState = SET_WEIGHTS;                       // go back to "weight setting" state, and
+        if (nBatch == nBatches) {                           // If we're done,
+          processState = COMPLETED;                         // set process to "completed" state, and
           nBatches = 1;                                     // reset the number of batches to 1.
           strcpy_P(systemStatus, PSTR("Complete.           "));
           updateDisplay = true;
           digitalWrite(startButtonLED, LOW);                // Switch off the LED of the Start button.
+          digitalWrite(completeLED, HIGH);                  // Switch on the "complete" LED.
         }
         else {                                              // Otherwise go standby for the next batch.
           sprintf_P(systemStatus, PSTR("Standby batch %u...  "), nBatch + 1);
@@ -68,6 +69,9 @@ void handleProcess() {
     case STOPPED:                                           // User interrupt. Close all valves.
       closeValves();                                        // Close all input valves,
       digitalWrite(dischargeValvePin, LOW);                 // and the output valve.
+      break;
+
+    case COMPLETED:                                         // Process completed. Nothing to do until user takes further action.
       break;
   }
 }
@@ -89,7 +93,7 @@ void closeValves() {                                        // Close all the val
   }
 }
 
-uint16_t totalWeight() {
+uint16_t totalWeight() {                                    // Calculate the total weight of the batch as currently set.
   uint16_t total = 0;
   for (uint8_t i = 0; i < NBINS; i++) {
     total += binTargetWeight[i];
