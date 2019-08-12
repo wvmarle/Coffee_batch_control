@@ -6,11 +6,18 @@ void initInputs() {
   pinMode(batchSelectionButtonPin, INPUT_PULLUP);
   pinMode(batchSelectionLEDPin, OUTPUT);
   digitalWrite(batchSelectionLEDPin, LOW);
+  pinMode(stopButtonPin, INPUT_PULLUP);
+  
   for (uint8_t i = 0; i < NBINS; i++) {
     pinMode(binSelectionButtonPin[i], INPUT_PULLUP);
     pinMode(binSelectionLEDPin[i], OUTPUT);
     digitalWrite(binSelectionLEDPin[i], LOW);
   }
+  pinMode(INPUT1, INPUT_PULLUP);
+  pinMode(INPUT1LED, OUTPUT);
+  digitalWrite(INPUT1LED, LOW);
+  pinMode(completeLED, OUTPUT);
+  digitalWrite(completeLED, LOW);
 }
 
 void handleInputs() {
@@ -20,11 +27,12 @@ void handleInputs() {
   static ProcessStates stateWhenInterrupted;
   static uint32_t lastStopPressed;
   static bool lastStopState;
+  int32_t encoderPosition = setWeightEncoder.read() / 2;    // Read the current encoder input.
+  digitalWrite(INPUT1LED, digitalRead(INPUT1));             // Have INPUT1LED follow the state of INPUT1.
   switch (processState) {
     case SET_WEIGHTS:
       if (selectedBin == NBINS &&                           // No bin selected so not setting a bin quantity,
           settingBatch == false) {                          // and not setting the number of batches to run.
-        oldPosition = setWeightEncoder.read();              // Encoder inputs are to be ignored at this time, so we simply read the current state.
         if (digitalRead(batchSelectionButtonPin) == LOW) {  // Batch selection button pressed: set the number of batches to run.
           settingBatch = true;
           digitalWrite(batchSelectionLEDPin, HIGH);         // Switch on the button's LED.
@@ -60,17 +68,15 @@ void handleInputs() {
         }
       }
       else {                                                // A bin has been selected or we're setting the number of batches - read the encoder.
-        long pos = setWeightEncoder.read() / 2;             // Check the current encoder state - divided by 2 as the library counts double.
-        if (pos != oldPosition) {                           // If it has changed, handle this.
+        if (encoderPosition != oldPosition) {               // If encoder position has changed, calculate the batches accordingly.
           if (settingBatch) {
-            nBatches += (oldPosition - pos);                // Calculate the new number of batches.
+            nBatches += (oldPosition - encoderPosition);    // Calculate the new number of batches.
             nBatches = constrain(nBatches, 1, MAX_BATCHES); // Make sure it's within limits.
           }
           else {
-            binTargetWeight[selectedBin] += (oldPosition - pos); // Calculate the new weight.
+            binTargetWeight[selectedBin] += (oldPosition - encoderPosition); // Calculate the new weight.
             binTargetWeight[selectedBin] = constrain(binTargetWeight[selectedBin], MIN_WEIGHT, MAX_WEIGHT); // Make sure it's within limits.
           }
-          oldPosition = pos;
           updateDisplay = true;
         }
         if (digitalRead(encoderPushPin) == LOW) {           // Encoder pressed to confirm a setting.
@@ -92,7 +98,7 @@ void handleInputs() {
     case FILLING_BIN:
     case FILLING_PAUSE:
     case DISCHARGE_BATCH:
-      if (digitalRead(stopButtonPin == LOW)) {              // When stop pressed: interrupt the process.
+      if (digitalRead(stopButtonPin) == LOW) {              // When stop pressed: interrupt the process.
         processState = STOPPED;
         digitalWrite(stopButtonLED, HIGH);                  // Switch on the LED in the stop button.
         digitalWrite(startButtonLED, LOW);                  // Switch off the LED in the start button.
@@ -129,4 +135,5 @@ void handleInputs() {
       }
       break;
   }
+  oldPosition = encoderPosition;
 }

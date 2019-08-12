@@ -13,20 +13,20 @@ void handleDisplay() {
     switch (processState) {
       case SET_WEIGHTS:
         lcd.setCursor(0, 0);                                // Line 0: the target weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binTargetWeight[0], binTargetWeight[1]);
+        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u   "), binTargetWeight[0], binTargetWeight[1]);
         lcd.print(linebuff);
         lcd.setCursor(0, 1);                                // Line 1: the target weights of bins 2 and 3.
-        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binTargetWeight[2], binTargetWeight[3]);
+        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u   "), binTargetWeight[2], binTargetWeight[3]);
         lcd.print(linebuff);
         break;
 
       case FILLING_BIN:
       case FILLING_PAUSE:
         lcd.setCursor(0, 0);                                // Line 0: the target weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B1: %5.1f B2: %5.1f"), binWeight[0], binWeight[1]);
+        sprintf_P(linebuff, PSTR("B1: %5.1f B2: %5.1f "), binWeight[0], binWeight[1]);
         lcd.print(linebuff);
         lcd.setCursor(0, 1);                                // Line 1: the target weights of bins 2 and 3.
-        sprintf_P(linebuff, PSTR("B3: %5.1f B4: %5.1f"), binWeight[2], binWeight[3]);
+        sprintf_P(linebuff, PSTR("B3: %5.1f B4: %5.1f "), binWeight[2], binWeight[3]);
         lcd.print(linebuff);
         break;
 
@@ -56,7 +56,7 @@ void handleDisplay() {
         break;
 
       case STOPPED:
-        strcpy_P(linebuff, PSTR("Start: continue."));
+        strcpy_P(linebuff, PSTR("Start: continue.    "));
         break;      
     }
     lcd.print(linebuff);

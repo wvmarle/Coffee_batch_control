@@ -49,6 +49,9 @@ const uint8_t LCD_D7_PIN = 32;
 const uint8_t LCD_BACKLIGHT_PIN = 33;
 LiquidCrystal lcd(LCD_RS_PIN, LCD_E_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
 
+const uint8_t INPUT1LED = 34;
+const uint8_t completeLED = 35;
+
 /*******************************************************************************
    Various global variables.
  *******************************************************************************/
@@ -69,6 +72,7 @@ enum ProcessStates {                                        // The various state
   FILLING_PAUSE,                                            // After filling a bin, take a short break to let the scale stabilise.
   DISCHARGE_BATCH,                                          // Final stage of the process: discharge the batch.
   STOPPED,                                                  // Stop button pressed - process halted.
+  COMPLETED,                                                // All batches done; process complete.
 } processState;
 
 void setup() {
