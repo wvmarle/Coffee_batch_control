@@ -12,22 +12,18 @@ void handleDisplay() {
     lastUpdate = millis();
     switch (processState) {
       case SET_WEIGHTS:
-        lcd.setCursor(0, 0);                                // Line 0: the target weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u   "), binTargetWeight[0], binTargetWeight[1]);
-        lcd.print(linebuff);
-        lcd.setCursor(0, 1);                                // Line 1: the target weights of bins 2 and 3.
-        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u   "), binTargetWeight[2], binTargetWeight[3]);
-        lcd.print(linebuff);
+        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binTargetWeight[0], binTargetWeight[1]);
+        printLine(linebuff, 0);                             // Line 0: the target weights of bins 1 and 2.
+        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binTargetWeight[2], binTargetWeight[3]);
+        printLine(linebuff, 1);                             // Line 1: the target weights of bins 2 and 3.
         break;
 
       case FILLING_BIN:
       case FILLING_PAUSE:
-        lcd.setCursor(0, 0);                                // Line 0: the target weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B1: %5.1f B2: %5.1f "), binWeight[0], binWeight[1]);
-        lcd.print(linebuff);
-        lcd.setCursor(0, 1);                                // Line 1: the target weights of bins 2 and 3.
-        sprintf_P(linebuff, PSTR("B3: %5.1f B4: %5.1f "), binWeight[2], binWeight[3]);
-        lcd.print(linebuff);
+        sprintf_P(linebuff, PSTR("B1: %5.1f B2: %5.1f"), binWeight[0], binWeight[1]);
+        printLine(linebuff, 0);                             // Line 0: the current weights of bins 1 and 2.
+        sprintf_P(linebuff, PSTR("B3: %5.1f B4: %5.1f"), binWeight[2], binWeight[3]);
+        printLine(linebuff, 1);                             // Line 1: the current weights of bins 2 and 3.
         break;
 
       case STANDBY:
@@ -35,16 +31,15 @@ void handleDisplay() {
       case STOPPED:
         break;
     }
-    lcd.setCursor(0, 2);                                    // Line 2: weights & batches depending on the status.
     switch (processState) {
       case SET_WEIGHTS:
-        sprintf_P(linebuff, PSTR("Total: %4u kg x %u. "), totalWeight(), nBatches);
+        sprintf_P(linebuff, PSTR("Total: %4u kg x %u."), totalWeight(), nBatches);
         break;
 
       case STANDBY:
       case FILLING_BIN:
       case FILLING_PAUSE:
-        sprintf_P(linebuff, PSTR("%5.1f kg, #%u       "), scaleWeight, nBatch);
+        sprintf_P(linebuff, PSTR("%5.1f kg, #%u"), scaleWeight, nBatch);
         break;
 
       case DISCHARGE_BATCH:
@@ -52,15 +47,23 @@ void handleDisplay() {
         uint32_t timeToGo = BATCH_DISCHARGE_TIME - timePassed;
         uint8_t minutes = int((float)timeToGo / (60 * 1000));
         uint8_t seconds = int(timeToGo / 1000.0) % 60;
-        sprintf_P(linebuff, PSTR("%5.1f kg, #%u %2u:%2u  "), scaleWeight, nBatch, minutes, seconds);
+        sprintf_P(linebuff, PSTR("%5.1f kg, #%u %2u:%2u"), scaleWeight, nBatch, minutes, seconds);
         break;
 
       case STOPPED:
-        strcpy_P(linebuff, PSTR("Start: continue.    "));
+        strcpy_P(linebuff, PSTR("Start: continue."));
         break;      
     }
-    lcd.print(linebuff);
-    lcd.setCursor(0, 3);                                    // Line 3: the system status message.
-    lcd.print(systemStatus);
+    printLine(linebuff, 2);                                 // Line 2: weights & batches depending on the status.
+    printLine(systemStatus, 3);                             // Line 3: the system status message.
   }
+}
+
+////////////////////////////////////////////////////////////////////
+// Print line to display; pad with spaces to 16 characters to remove stray characters.
+void printLine(const char *lineToPrint, uint8_t line) {
+  char printBuffer[21];
+  lcd.setCursor(0, line);
+  sprintf_P(printBuffer, PSTR("%-16s"), lineToPrint);       // Pad with trailing spaces to total length of 16 characters.
+  lcd.print(printBuffer);
 }

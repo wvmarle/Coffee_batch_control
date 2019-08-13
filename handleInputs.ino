@@ -18,6 +18,8 @@ void initInputs() {
   digitalWrite(INPUT1LED, LOW);
   pinMode(completeLED, OUTPUT);
   digitalWrite(completeLED, LOW);
+  pinMode(stopButtonLED, OUTPUT);
+  digitalWrite(stopButtonLED, LOW);
 }
 
 void handleInputs() {
@@ -50,7 +52,7 @@ void handleInputs() {
           //          }
           //          else {
           processState = STANDBY;                           // All is OK to start, go to Standby mode.
-          strcpy_P(systemStatus, PSTR("Standby batch 1...  "));
+          strcpy_P(systemStatus, PSTR("Standby batch 1..."));
           updateDisplay = true;
           nBatch = 0;                                       // It's the first batch.
           digitalWrite(startButtonLED, HIGH);               // Switch on the button's LED.
@@ -88,7 +90,7 @@ void handleInputs() {
             digitalWrite(binSelectionLEDPin[selectedBin], LOW); // Switch off the button's LED.
             selectedBin = NBINS;
           }
-          strcpy_P(systemStatus, PSTR("                    "));
+          strcpy_P(systemStatus, PSTR(""));
           updateDisplay = true;
         }
       }
@@ -111,18 +113,18 @@ void handleInputs() {
         if (lastStopState == HIGH) {                        // Previous state high: it's just pressed.
           lastStopState = LOW;                              // We're pressed now.
           lastStopPressed = millis();                       // Record when it happened.
-          strcpy_P(systemStatus, PSTR("Hold stop: cancel.  "));
+          strcpy_P(systemStatus, PSTR("Hold stop: cancel."));
           updateDisplay = true;
         }
         else if (millis() - lastStopPressed > CANCEL_DELAY) { // It's pressed long enough: cancel process.
           digitalWrite(stopButtonLED, LOW);                 // Switch off the LED in the stop button.
           processState = SET_WEIGHTS;
-          strcpy_P(systemStatus, PSTR("                    "));
+          strcpy_P(systemStatus, PSTR(""));
         }
       }
       else {
         if (lastStopState == LOW) {
-          strcpy_P(systemStatus, PSTR("                    "));
+          strcpy_P(systemStatus, PSTR(""));
         }
         lastStopState = HIGH;                               // Button not pressed.
       }
@@ -130,7 +132,7 @@ void handleInputs() {
         digitalWrite(stopButtonLED, LOW);                   // Switch off the LED in the stop button.
         digitalWrite(startButtonLED, HIGH);                 // Switch on the LED in the start button.
         processState = stateWhenInterrupted;                // Continue where we were.
-        strcpy_P(systemStatus, PSTR("                    "));
+        strcpy_P(systemStatus, PSTR(""));
         updateDisplay = true;
       }
       break;
