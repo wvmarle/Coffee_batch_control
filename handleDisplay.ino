@@ -21,16 +21,16 @@ void handleDisplay() {
       case FILLING_BIN:
       case FILLING_PAUSE:
         {
-          //        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binWeight[0], binWeight[1]);
-          //        printLine(linebuff, 0);                             // Line 0: the current weights of bins 1 and 2.
-          //        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binWeight[2], binWeight[3]);
-          //        printLine(linebuff, 1);                             // Line 1: the current weights of bins 2 and 3.
-          char floatBuf1[6];
-          char floatBuf2[6];
-          sprintf_P(linebuff, PSTR("B1: %s B2: %s"), dtostrf(binWeight[0], 5, 1, floatBuf1), dtostrf(binWeight[1], 5, 1, floatBuf2));
-          printLine(linebuff, 0);                             // Line 0: the target weights of bins 1 and 2.
-          sprintf_P(linebuff, PSTR("B3: %s B4: %s"), dtostrf(binWeight[2], 5, 1, floatBuf1), dtostrf(binWeight[3], 5, 1, floatBuf2));
-          printLine(linebuff, 1);                             // Line 1: the target weights of bins 3 and 4.
+          sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binWeight[0], binWeight[1]);
+          printLine(linebuff, 0);                             // Line 0: the current weights of bins 1 and 2.
+          sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binWeight[2], binWeight[3]);
+          printLine(linebuff, 1);                             // Line 1: the current weights of bins 2 and 3.
+          //          char floatBuf1[6];
+          //          char floatBuf2[6];
+          //          sprintf_P(linebuff, PSTR("B1: %s B2: %s"), dtostrf(binWeight[0], 5, 1, floatBuf1), dtostrf(binWeight[1], 5, 1, floatBuf2));
+          //          printLine(linebuff, 0);                             // Line 0: the target weights of bins 1 and 2.
+          //          sprintf_P(linebuff, PSTR("B3: %s B4: %s"), dtostrf(binWeight[2], 5, 1, floatBuf1), dtostrf(binWeight[3], 5, 1, floatBuf2));
+          //          printLine(linebuff, 1);                             // Line 1: the target weights of bins 3 and 4.
         }
         break;
 
