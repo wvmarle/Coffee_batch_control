@@ -12,18 +12,34 @@ void handleDisplay() {
     lastUpdate = millis();
     switch (processState) {
       case SET_WEIGHTS:
-        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binTargetWeight[0], binTargetWeight[1]);
-        printLine(linebuff, 0);                             // Line 0: the target weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binTargetWeight[2], binTargetWeight[3]);
-        printLine(linebuff, 1);                             // Line 1: the target weights of bins 2 and 3.
+        {
+          //        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binTargetWeight[0], binTargetWeight[1]);
+          //        printLine(linebuff, 0);                             // Line 0: the target weights of bins 1 and 2.
+          //        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binTargetWeight[2], binTargetWeight[3]);
+          //        printLine(linebuff, 1);                             // Line 1: the target weights of bins 3 and 4.
+          char floatBuf1[6];
+          char floatBuf2[6];
+          sprintf_P(linebuff, PSTR("B1: %s   B2: %s"), dtostrf(binTargetWeight[0], 5, 1, floatBuf1), dtostrf(binTargetWeight[1], 5, 1, floatBuf2));
+          printLine(linebuff, 0);                             // Line 0: the target weights of bins 1 and 2.
+          sprintf_P(linebuff, PSTR("B3: %s   B4: %s"), dtostrf(binTargetWeight[2], 5, 1, floatBuf1), dtostrf(binTargetWeight[3], 5, 1, floatBuf2));
+          printLine(linebuff, 1);                             // Line 1: the target weights of bins 3 and 4.
+        }
         break;
 
       case FILLING_BIN:
       case FILLING_PAUSE:
-        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binWeight[0], binWeight[1]);
-        printLine(linebuff, 0);                             // Line 0: the current weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binWeight[2], binWeight[3]);
-        printLine(linebuff, 1);                             // Line 1: the current weights of bins 2 and 3.
+        {
+          //        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binWeight[0], binWeight[1]);
+          //        printLine(linebuff, 0);                             // Line 0: the current weights of bins 1 and 2.
+          //        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binWeight[2], binWeight[3]);
+          //        printLine(linebuff, 1);                             // Line 1: the current weights of bins 2 and 3.
+          char floatBuf1[6];
+          char floatBuf2[6];
+          sprintf_P(linebuff, PSTR("B1: %s   B2: %s"), dtostrf(binWeight[0], 5, 1, floatBuf1), dtostrf(binWeight[1], 5, 1, floatBuf2));
+          printLine(linebuff, 0);                             // Line 0: the target weights of bins 1 and 2.
+          sprintf_P(linebuff, PSTR("B3: %s   B4: %s"), dtostrf(binWeight[2], 5, 1, floatBuf1), dtostrf(binWeight[3], 5, 1, floatBuf2));
+          printLine(linebuff, 1);                             // Line 1: the target weights of bins 3 and 4.
+        }
         break;
 
       case STANDBY:
@@ -47,12 +63,13 @@ void handleDisplay() {
         uint32_t timeToGo = BATCH_DISCHARGE_TIME - timePassed;
         uint8_t minutes = int((float)timeToGo / (60 * 1000));
         uint8_t seconds = int(timeToGo / 1000.0) % 60;
+        //        sprintf_P(linebuff, PSTR("%3u kg, #%u %2u:%2u"), scaleWeight, nBatch, minutes, seconds);
         sprintf_P(linebuff, PSTR("%3u kg, #%u %2u:%2u"), scaleWeight, nBatch, minutes, seconds);
         break;
 
       case STOPPED:
         strcpy_P(linebuff, PSTR("Start: continue."));
-        break;      
+        break;
     }
     printLine(linebuff, 2);                                 // Line 2: weights & batches depending on the status.
     printLine(systemStatus, 3);                             // Line 3: the system status message.
