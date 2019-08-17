@@ -1,25 +1,34 @@
+
+
 void initInputs() {
   pinMode(encoderPushPin, INPUT_PULLUP);
+  
   pinMode(startButtonPin, INPUT_PULLUP);
-  pinMode(startButtonLED, OUTPUT);
-  digitalWrite(startButtonLED, LOW);
+  pinMode(startButtonLEDPin, OUTPUT);
+  digitalWrite(startButtonLEDPin, LOW);
+
   pinMode(batchSelectionButtonPin, INPUT_PULLUP);
   pinMode(batchSelectionLEDPin, OUTPUT);
   digitalWrite(batchSelectionLEDPin, LOW);
+  
   pinMode(stopButtonPin, INPUT_PULLUP);
-
+  
+  pinMode(INPUT1, INPUT_PULLUP);
+  pinMode(INPUT1LEDPin, OUTPUT);
+  digitalWrite(INPUT1LEDPin, LOW);
+  
+  pinMode(completeLEDPin, OUTPUT);
+  digitalWrite(completeLEDPin, LOW);
+  
+  pinMode(stopButtonLEDPin, OUTPUT);
+  digitalWrite(stopButtonLEDPin, LOW);
+  pinMode(dischargeValvePin, OUTPUT);
   for (uint8_t i = 0; i < NBINS; i++) {
     pinMode(binSelectionButtonPin[i], INPUT_PULLUP);
     pinMode(binSelectionLEDPin[i], OUTPUT);
     digitalWrite(binSelectionLEDPin[i], LOW);
+    pinMode(butterflyValvePin[i], OUTPUT);
   }
-  pinMode(INPUT1, INPUT_PULLUP);
-  pinMode(INPUT1LED, OUTPUT);
-  digitalWrite(INPUT1LED, LOW);
-  pinMode(completeLED, OUTPUT);
-  digitalWrite(completeLED, LOW);
-  pinMode(stopButtonLED, OUTPUT);
-  digitalWrite(stopButtonLED, LOW);
 }
 
 void handleInputs() {
@@ -30,7 +39,7 @@ void handleInputs() {
   static uint32_t lastStopPressed;
   static bool lastStopState;
   int32_t encoderPosition = setWeightEncoder.read() / 2;    // Read the current encoder input.
-  digitalWrite(INPUT1LED, digitalRead(INPUT1));             // Have INPUT1LED follow the state of INPUT1.
+  digitalWrite(INPUT1LEDPin, digitalRead(INPUT1));          // Have INPUT1LED follow the state of INPUT1.
   switch (processState) {
     case SET_WEIGHTS:
       if (selectedBin == NBINS &&                           // No bin selected so not setting a bin quantity,
@@ -55,7 +64,7 @@ void handleInputs() {
           strcpy_P(systemStatus, PSTR("Standby batch 1..."));
           updateDisplay = true;
           nBatch = 0;                                       // It's the first batch.
-          digitalWrite(startButtonLED, HIGH);               // Switch on the button's LED.
+          digitalWrite(startButtonLEDPin, HIGH);            // Switch on the button's LED.
           //          }
         }
         else {
@@ -102,8 +111,8 @@ void handleInputs() {
     case DISCHARGE_BATCH:
       if (digitalRead(stopButtonPin) == LOW) {              // When stop pressed: interrupt the process.
         processState = STOPPED;
-        digitalWrite(stopButtonLED, HIGH);                  // Switch on the LED in the stop button.
-        digitalWrite(startButtonLED, LOW);                  // Switch off the LED in the start button.
+        digitalWrite(stopButtonLEDPin, HIGH);               // Switch on the LED in the stop button.
+        digitalWrite(startButtonLEDPin, LOW);               // Switch off the LED in the start button.
       }
       stateWhenInterrupted = processState;
       break;
@@ -117,7 +126,7 @@ void handleInputs() {
           updateDisplay = true;
         }
         else if (millis() - lastStopPressed > CANCEL_DELAY) { // It's pressed long enough: cancel process.
-          digitalWrite(stopButtonLED, LOW);                 // Switch off the LED in the stop button.
+          digitalWrite(stopButtonLEDPin, LOW);              // Switch off the LED in the stop button.
           processState = SET_WEIGHTS;
           strcpy_P(systemStatus, PSTR(""));
         }
@@ -129,8 +138,8 @@ void handleInputs() {
         lastStopState = HIGH;                               // Button not pressed.
       }
       if (digitalRead(startButtonPin) == LOW) {             // Start button pressed.
-        digitalWrite(stopButtonLED, LOW);                   // Switch off the LED in the stop button.
-        digitalWrite(startButtonLED, HIGH);                 // Switch on the LED in the start button.
+        digitalWrite(stopButtonLEDPin, LOW);                // Switch off the LED in the stop button.
+        digitalWrite(startButtonLEDPin, HIGH);              // Switch on the LED in the start button.
         processState = stateWhenInterrupted;                // Continue where we were.
         strcpy_P(systemStatus, PSTR(""));
         updateDisplay = true;
@@ -153,7 +162,7 @@ void handleInputs() {
       }
       if (action) {                                         // User did something: clear complete status.
         processState = SET_WEIGHTS;
-        digitalWrite(completeLED, LOW);                     // Switch off the "complete" LED.
+        digitalWrite(completeLEDPin, LOW);                  // Switch off the "complete" LED.
       }
       break;
   }

@@ -29,11 +29,11 @@ const uint8_t encoderPushPin = 4;                           // The encoder's pus
 const uint8_t binSelectionButtonPin[NBINS] = {5, 6, 7, 8};  // The bin selection buttons (active LOW).
 const uint8_t binSelectionLEDPin[NBINS] = {9, 10, 11, 12};  // The LEDs inside the buttons (lit when selected).
 const uint8_t startButtonPin = 13;                          // Start button: starts the mixing process.
-const uint8_t startButtonLED = 14;                          // The LED inside the start button.
+const uint8_t startButtonLEDPin = 14;                       // The LED inside the start button.
 const uint8_t batchSelectionButtonPin = 15;                 // The batch selection button: select number of batches to run.
 const uint8_t batchSelectionLEDPin = 16;                    // The LED inside the batch selection button (lit when selected).
 const uint8_t stopButtonPin = 17;                           // The stop button (halts the process).
-const uint8_t stopButtonLED = 20;                           // The stop button (halts the process).
+const uint8_t stopButtonLEDPin = 20;                        // The stop button (halts the process).
 
 const uint8_t butterflyValvePin[NBINS] = {21, 22, 23, 24};  // Connections to the four butterfly valves handling the input hoppers.
 const uint8_t dischargeValvePin = 25;                       // Connection to the fifth butterfly valve, handling the discharge.
@@ -49,8 +49,8 @@ const uint8_t LCD_D7_PIN = 32;
 const uint8_t LCD_BACKLIGHT_PIN = 33;
 LiquidCrystal lcd(LCD_RS_PIN, LCD_E_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
 
-const uint8_t INPUT1LED = 34;
-const uint8_t completeLED = 35;
+const uint8_t INPUT1LEDPin = 34;
+const uint8_t completeLEDPin = 35;
 
 /*******************************************************************************
    Various global variables.

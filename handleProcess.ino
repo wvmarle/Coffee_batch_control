@@ -57,8 +57,8 @@ void handleProcess() {
           nBatches = 1;                                     // reset the number of batches to 1.
           strcpy_P(systemStatus, PSTR("Complete.           "));
           updateDisplay = true;
-          digitalWrite(startButtonLED, LOW);                // Switch off the LED of the Start button.
-          digitalWrite(completeLED, HIGH);                  // Switch on the "complete" LED.
+          digitalWrite(startButtonLEDPin, LOW);             // Switch off the LED of the Start button.
+          digitalWrite(completeLEDPin, HIGH);               // Switch on the "complete" LED.
         }
         else {                                              // Otherwise go standby for the next batch.
           sprintf_P(systemStatus, PSTR("Standby batch %u...  "), nBatch + 1);
