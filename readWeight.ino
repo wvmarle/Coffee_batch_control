@@ -21,7 +21,7 @@ void readWeight() {
     switch (receiveState) {
       case WAITING:
         if (c == 0x02) {
-          Serial.println(F("Start character received."));
+          Serial.println(F("Start."));
           nChars = 0;
           receiveState = RECEIVING;
         }
@@ -32,6 +32,7 @@ void readWeight() {
           if (c == '-' || c == ' ') {
             buff[nChars] = c;
             nChars++;
+            Serial.println(F("Sign."));
           }
           else {
             Serial.print(F("Scale read error: unexpected first value character received: 0x"));
@@ -51,11 +52,14 @@ void readWeight() {
           }
           if (nChars == 8) {
             buff[7] = 0;
+            Serial.print(F("Got data: "));
+            Serial.println(buff);
           }
         }
         else if (nChars == 8) {                           // receive STATUS
           if (c == 'G' || c == 'N' || c == 'U' || c == 'O' || c == 'E') {
             stat = c;
+            Serial.println(F("Done."));
           }
           else {
             Serial.print(F("Scale read error: unexpected status character received: 0x"));
