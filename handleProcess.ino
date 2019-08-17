@@ -82,14 +82,23 @@ void openValve(uint8_t openValve) {
   for (uint8_t i = 0; i < NBINS; i++) {
     if (i == openValve) {                                   // Open this valve.
       digitalWrite(butterflyValvePin[i], HIGH);
+      Serial.print(F("Opening valve "));
+      Serial.print(i + 1);
+      Serial.print(F(" on pin "));
+      Serial.println(butterflyValvePin[i]);
     }
     else {
       digitalWrite(butterflyValvePin[i], LOW);              // Close all the others.
+      Serial.print(F("Closing valve "));
+      Serial.print(i + 1);
+      Serial.print(F(" on pin "));
+      Serial.println(butterflyValvePin[i]);
     }
   }
 }
 
 void closeValves() {                                        // Close all the valves.
+  Serial.println(F("Closing all valves."));
   for (uint8_t i = 0; i < NBINS; i++) {
     digitalWrite(butterflyValvePin[i], LOW);
   }

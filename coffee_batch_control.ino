@@ -76,6 +76,7 @@ enum ProcessStates {                                        // The various state
 } processState;
 
 void setup() {
+  Serial.begin(115200);
   Serial1.begin(9600);
   initDisplay();
   initInputs();
