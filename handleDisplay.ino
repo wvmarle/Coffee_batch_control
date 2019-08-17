@@ -20,9 +20,9 @@ void handleDisplay() {
 
       case FILLING_BIN:
       case FILLING_PAUSE:
-        sprintf_P(linebuff, PSTR("B1: %5.1f B2: %5.1f"), binWeight[0], binWeight[1]);
+        sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binWeight[0], binWeight[1]);
         printLine(linebuff, 0);                             // Line 0: the current weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B3: %5.1f B4: %5.1f"), binWeight[2], binWeight[3]);
+        sprintf_P(linebuff, PSTR("B3: %3u   B4: %3u"), binWeight[2], binWeight[3]);
         printLine(linebuff, 1);                             // Line 1: the current weights of bins 2 and 3.
         break;
 
@@ -39,7 +39,7 @@ void handleDisplay() {
       case STANDBY:
       case FILLING_BIN:
       case FILLING_PAUSE:
-        sprintf_P(linebuff, PSTR("%5.1f kg, #%u"), scaleWeight, nBatch);
+        sprintf_P(linebuff, PSTR("%3u kg, #%u"), scaleWeight, nBatch);
         break;
 
       case DISCHARGE_BATCH:
@@ -47,7 +47,7 @@ void handleDisplay() {
         uint32_t timeToGo = BATCH_DISCHARGE_TIME - timePassed;
         uint8_t minutes = int((float)timeToGo / (60 * 1000));
         uint8_t seconds = int(timeToGo / 1000.0) % 60;
-        sprintf_P(linebuff, PSTR("%5.1f kg, #%u %2u:%2u"), scaleWeight, nBatch, minutes, seconds);
+        sprintf_P(linebuff, PSTR("%3u kg, #%u %2u:%2u"), scaleWeight, nBatch, minutes, seconds);
         break;
 
       case STOPPED:

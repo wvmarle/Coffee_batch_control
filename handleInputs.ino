@@ -28,6 +28,7 @@ void initInputs() {
     pinMode(binSelectionLEDPin[i], OUTPUT);
     digitalWrite(binSelectionLEDPin[i], LOW);
     pinMode(butterflyValvePin[i], OUTPUT);
+    digitalWrite(butterflyValvePin[i], LOW);
   }
 }
 

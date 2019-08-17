@@ -78,9 +78,9 @@ void handleProcess() {
   }
 }
 
-void openValve(uint8_t openValve) {
+void openValve(uint8_t valve) {
   for (uint8_t i = 0; i < NBINS; i++) {
-    if (i == openValve) {                                   // Open this valve.
+    if (i == valve) {                                       // Open this valve.
       digitalWrite(butterflyValvePin[i], HIGH);
       Serial.print(F("Opening valve "));
       Serial.print(i + 1);

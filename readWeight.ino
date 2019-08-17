@@ -37,6 +37,11 @@ void readWeight() {
             buff[nChars - 1] = c;
             nChars++;
           }
+          else {
+            Serial.print(F("Scale read error: unexpected value character received: 0x"));
+            Serial.println(c, HEX);
+            receiveState = WAITING;
+          }
           if (nChars == 8) {
             buff[7] = 0;
           }
@@ -52,6 +57,14 @@ void readWeight() {
       case COMPLETING:
         if (c == 0x03) {
           scaleWeight = atof(buff);
+          Serial.print(F("Weight reading: "));
+          Serial.print(scaleWeight);
+          Serial.println(F(" kg."));
+        }
+        else {
+          Serial.print(F("Scale read error: unexpected termination character received: 0x"));
+          Serial.println(c, HEX);
+          receiveState = WAITING;
         }
         receiveState = WAITING;
         nChars = 0;
