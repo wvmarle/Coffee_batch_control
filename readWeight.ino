@@ -22,6 +22,7 @@ void readWeight() {
       case WAITING:
         if (c == 0x02) {
           Serial.println(F("Start character received."));
+          nChars = 0;
           receiveState = RECEIVING;
         }
         break;
@@ -78,7 +79,6 @@ void readWeight() {
           receiveState = WAITING;
         }
         receiveState = WAITING;
-        nChars = 0;
         break;
     }
   }
