@@ -64,6 +64,6 @@ void handleDisplay() {
 void printLine(const char *lineToPrint, uint8_t line) {
   char printBuffer[21];
   lcd.setCursor(0, line);
-  sprintf_P(printBuffer, PSTR("%-16s"), lineToPrint);       // Pad with trailing spaces to total length of 16 characters.
+  sprintf_P(printBuffer, PSTR("%-20s"), lineToPrint);       // Pad with trailing spaces to total length of 20 characters.
   lcd.print(printBuffer);
 }

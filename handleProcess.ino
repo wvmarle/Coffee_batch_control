@@ -17,7 +17,8 @@ void handleProcess() {
       break;
 
     case FILLING_BIN:                                       // Open the valves one by one; add material.
-      if (scaleWeight >= startWeight + binTargetWeight[fillingBin]) { // This one is complete.
+      binWeight[fillingBin] = startWeight - scaleWeight;    // Record the weight added to this bin.
+      if (binWeight[fillingBin] >= binTargetWeight[fillingBin]) { // This one is complete.
         closeValves();                                      // Close the valves.
         processState = FILLING_PAUSE;                       // Take a break for the scale to stabilise.
         lastFillCompleteTime = millis();
@@ -27,6 +28,7 @@ void handleProcess() {
       break;
 
     case FILLING_PAUSE:                                     // Wait a bit... allow scale to stabilise.
+      binWeight[fillingBin] = startWeight - scaleWeight;    // Continue to record the weight of this bin.
       if (millis() - lastFillCompleteTime > FILL_PAUSE_TIME) { // When time's up:
         fillingBin++;                                       // Next bin (if any).
         if (fillingBin < NBINS) {                           // We have bins left to fill.

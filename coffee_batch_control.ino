@@ -4,7 +4,7 @@
 /*******************************************************************************
    Timing and other settings.
  *******************************************************************************/
-uint32_t LCD_UPDATE_INTERVAL = 1000;                        // How often to update the LCD display (interval in ms).
+uint32_t LCD_UPDATE_INTERVAL = 500;                         // How often to update the LCD display (interval in ms).
 uint32_t BATCH_DISCHARGE_TIME = 4 * 60 * 1000;              // For how long to keep buttefly valve 5 open (in ms).
 uint32_t FILL_PAUSE_TIME = 10000;                           // 10 second delay between filling bins, to allow scale to stabilise.
 uint32_t CANCEL_DELAY = 1000;                               // Time in ms to hold the Stop button to cancel the process.
