@@ -104,7 +104,8 @@ void readWeight() {
   static char stat = 0;
   if (Serial1.available()) {
     char c = Serial1.read();
-    Serial.print(F("0x"));
+    Serial.print(nChars);
+    Serial.print(F(": 0x"));
     Serial.print(c, HEX);
     Serial.print(F(", "));
     switch (receiveState) {

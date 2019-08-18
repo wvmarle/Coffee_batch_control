@@ -10,7 +10,7 @@ void handleProcess() {
         processState = FILLING_BIN;                         // We start filling the bin.
         fillingBin = 0;                                     // Start filling the first bin.
         openValve(fillingBin);                              // Open valve for that bin.
-        strcpy_P(systemStatus, PSTR("Filling hopper 1... "));
+        strcpy_P(systemStatus, PSTR("Filling hopper 1..."));
         updateDisplay = true;
         startWeight = scaleWeight;                          // The weight at the start of this process.
       }
@@ -22,7 +22,7 @@ void handleProcess() {
         closeValves();                                      // Close the valves.
         processState = FILLING_PAUSE;                       // Take a break for the scale to stabilise.
         lastFillCompleteTime = millis();
-        sprintf_P(systemStatus, PSTR("Filling hopper %u done"), fillingBin + 1);
+        sprintf_P(systemStatus, PSTR("Hopper %u filled."), fillingBin + 1);
         updateDisplay = true;
       }
       break;
@@ -35,13 +35,13 @@ void handleProcess() {
           processState = FILLING_BIN;
           startWeight = scaleWeight;
           openValve(fillingBin);                            // Open valve for that bin.
-          sprintf_P(systemStatus, PSTR("Filling hopper %u...  "), fillingBin + 1);
+          sprintf_P(systemStatus, PSTR("Filling hopper %u..."), fillingBin + 1);
           updateDisplay = true;
         }
         else {                                              // All bins filled.
           processState = DISCHARGE_BATCH;                   // Continue the process: discharge the batch through the discharge valve.
           lastFillCompleteTime = millis();
-          sprintf_P(systemStatus, PSTR("Discharge batch %u. "), nBatch + 1);
+          sprintf_P(systemStatus, PSTR("Discharge batch %u."), nBatch + 1);
           updateDisplay = true;
         }
       }
@@ -55,13 +55,13 @@ void handleProcess() {
         if (nBatch == nBatches) {                           // If we're done,
           processState = COMPLETED;                         // set process to "completed" state, and
           nBatches = 1;                                     // reset the number of batches to 1.
-          strcpy_P(systemStatus, PSTR("Complete.           "));
+          strcpy_P(systemStatus, PSTR("Complete."));
           updateDisplay = true;
           digitalWrite(startButtonLEDPin, LOW);             // Switch off the LED of the Start button.
           digitalWrite(completeLEDPin, HIGH);               // Switch on the "complete" LED.
         }
         else {                                              // Otherwise go standby for the next batch.
-          sprintf_P(systemStatus, PSTR("Standby batch %u...  "), nBatch + 1);
+          sprintf_P(systemStatus, PSTR("Standby batch %u..."), nBatch + 1);
           updateDisplay = true;
           processState = STANDBY;
         }

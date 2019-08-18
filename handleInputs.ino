@@ -48,16 +48,16 @@ void handleInputs() {
         if (digitalRead(batchSelectionButtonPin) == LOW) {  // Batch selection button pressed: set the number of batches to run.
           settingBatch = true;
           digitalWrite(batchSelectionLEDPin, HIGH);         // Switch on the button's LED.
-          strcpy_P(systemStatus, PSTR("Set batches to run. "));
+          strcpy_P(systemStatus, PSTR("Set batches to run."));
           updateDisplay = true;
         }
         else if (digitalRead(startButtonPin) == LOW) {      // Start button pressed: check if we can start the batch.
           //          if (totalWeight() > MAX_RUN_WEIGHT) {             // Selected batch is overweight.
-          //            strcpy_P(systemStatus, PSTR("Batch too large.    "));
+          //            strcpy_P(systemStatus, PSTR("Batch too large."));
           //            updateDisplay = true;
           //          }
           //          else if (totalWeight() < MIN_RUN_WEIGHT) {        // Selected batch is underweight.
-          //            strcpy_P(systemStatus, PSTR("Batch too small.    "));
+          //            strcpy_P(systemStatus, PSTR("Batch too small."));
           //            updateDisplay = true;
           //          }
           //          else {

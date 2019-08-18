@@ -41,16 +41,17 @@ void handleDisplay() {
     }
     switch (processState) {
       case SET_WEIGHTS:
-        sprintf_P(linebuff, PSTR("Total: %4u kg x %u."), totalWeight(), nBatches);
+        sprintf_P(linebuff, PSTR("Total: %u kg x %u"), totalWeight(), nBatches);
         break;
 
       case STANDBY:
       case FILLING_BIN:
       case FILLING_PAUSE:
-        {
-          char floatBuf[6];
-          sprintf_P(linebuff, PSTR("%s kg, #%u"), dtostrf(scaleWeight, 5, 1, floatBuf), nBatch);
-        }
+        //        {
+        //          char floatBuf[6];
+        //          sprintf_P(linebuff, PSTR("%s kg, #%3u"), dtostrf(scaleWeight, 5, 1, floatBuf), nBatch);
+        //        }
+        sprintf_P(linebuff, PSTR("%3u kg, #%u"), scaleWeight, nBatch);
         break;
 
       case DISCHARGE_BATCH:
