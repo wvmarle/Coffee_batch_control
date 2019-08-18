@@ -1,5 +1,3 @@
-
-
 void initInputs() {
   pinMode(encoderPushPin, INPUT_PULLUP);
   
@@ -52,15 +50,6 @@ void handleInputs() {
           updateDisplay = true;
         }
         else if (digitalRead(startButtonPin) == LOW) {      // Start button pressed: check if we can start the batch.
-          //          if (totalWeight() > MAX_RUN_WEIGHT) {             // Selected batch is overweight.
-          //            strcpy_P(systemStatus, PSTR("Batch too large."));
-          //            updateDisplay = true;
-          //          }
-          //          else if (totalWeight() < MIN_RUN_WEIGHT) {        // Selected batch is underweight.
-          //            strcpy_P(systemStatus, PSTR("Batch too small."));
-          //            updateDisplay = true;
-          //          }
-          //          else {
           processState = STANDBY;                           // All is OK to start, go to Standby mode.
           strcpy_P(systemStatus, PSTR("Standby batch 1..."));
           updateDisplay = true;
