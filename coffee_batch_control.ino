@@ -12,8 +12,8 @@ const uint8_t MIN_WEIGHT = 0;                               // Minimum weight th
 const uint8_t MAX_WEIGHT = 100;                             // Maximum weight that can be selected for a bin (in kg).
 const uint8_t MAX_BATCHES = 255;                            // Maximum number of batches that can be set.
 
-//const uint8_t MIN_RUN_WEIGHT = 50;                          // Minimum weight that must be selected to start a batch (in kg).
-//const uint8_t MAX_RUN_WEIGHT = 150;                         // Maximum weight that is allowed to be selected to start a batch (in kg).
+//const uint8_t MIN_RUN_WEIGHT = 50;                        // Minimum weight that must be selected to start a batch (in kg).
+//const uint8_t MAX_RUN_WEIGHT = 150;                       // Maximum weight that is allowed to be selected to start a batch (in kg).
 
 
 /*******************************************************************************

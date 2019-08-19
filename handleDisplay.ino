@@ -68,4 +68,11 @@ void printLine(const char *lineToPrint, uint8_t line) {
   lcd.setCursor(0, line);
   sprintf_P(printBuffer, PSTR("%-20s"), lineToPrint);       // Pad with trailing spaces to total length of 20 characters.
   lcd.print(printBuffer);
+  Serial.print(F("Printing line: \""));
+  Serial.print(printBuffer);
+  Serial.print(F("\", length: "));
+  Serial.print(strlen(printBuffer));
+  Serial.print(F(", length of lineToPrint: "));
+  Serial.println(strlen(lineToPrint));
+
 }

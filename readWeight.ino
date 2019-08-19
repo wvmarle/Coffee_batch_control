@@ -104,15 +104,15 @@ void readWeight() {
   static char stat = 0;
   if (Serial1.available()) {
     char c = Serial1.read();
-    Serial.print(nChars);
-    Serial.print(F(": 0x"));
-    Serial.print(c, HEX);
-    Serial.print(F(", "));
+//    Serial.print(nChars);
+//    Serial.print(F(": 0x"));
+//    Serial.print(c, HEX);
+//    Serial.print(F(", "));
     switch (receiveState) {
       case WAITING:
         if (c == STX) {
           receiveState = RECEIVING;
-          Serial.println(F("STX received."));
+//          Serial.println(F("STX received."));
         }
         else {
           Serial.println();
@@ -127,14 +127,14 @@ void readWeight() {
           if (c == '-' || c == ' ') {
             buff[nChars] = c;
             nChars++;
-            Serial.print(F("Sign received: "));
-            Serial.println((c == '-') ? F("-") : F("<none>"));
+//            Serial.print(F("Sign received: "));
+//            Serial.println((c == '-') ? F("-") : F("<none>"));
           }
-          else {
-            Serial.println();
-            Serial.print(F("Unexpected SIGN character 0x"));
-            Serial.println(c, HEX);
-          }
+//          else {
+//            Serial.println();
+//            Serial.print(F("Unexpected SIGN character 0x"));
+//            Serial.println(c, HEX);
+//          }
         }
         else if (nChars > 0 && nChars < 8) {               // receive WEIGHT
           if ((c >= '0' && c <= '9') || c == '.' || c == ' ' ) {
@@ -157,22 +157,22 @@ void readWeight() {
         else if (nChars == 8) {                           // receive STATUS
           if (c == 'G' || c == 'N' || c == 'U' || c == 'O' || c == 'E') {
             stat = c;
-            Serial.print(F("Status received: "));
-            if (c == 'G') {
-              Serial.println(F("Gross"));
-            }
-            else if (c == 'N') {
-              Serial.println(F("Net"));
-            }
-            else if (c == 'U') {
-              Serial.println(F("Underload"));
-            }
-            else if (c == 'O') {
-              Serial.println(F("Overload"));
-            }
-            else if (c == 'E') {
-              Serial.println(F("Error"));
-            }
+//            Serial.print(F("Status received: "));
+//            if (c == 'G') {
+//              Serial.println(F("Gross"));
+//            }
+//            else if (c == 'N') {
+//              Serial.println(F("Net"));
+//            }
+//            else if (c == 'U') {
+//              Serial.println(F("Underload"));
+//            }
+//            else if (c == 'O') {
+//              Serial.println(F("Overload"));
+//            }
+//            else if (c == 'E') {
+//              Serial.println(F("Error"));
+//            }
           }
           else {
             Serial.println();
@@ -190,13 +190,13 @@ void readWeight() {
           Serial.println(c, HEX);
         }
         else {
-          Serial.println(F("Transmission completed."));
+//          Serial.println(F("Transmission completed."));
           float f = atof(buff);
-          Serial.print(F("Weight as float: "));
-          Serial.println(f, 2);
-          Serial.println();
-          Serial.println();
-          Serial.println();
+//          Serial.print(F("Weight as float: "));
+//          Serial.println(f, 2);
+//          Serial.println();
+//          Serial.println();
+//          Serial.println();
           scaleWeight = f;
         }
         receiveState = WAITING;
