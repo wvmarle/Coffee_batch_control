@@ -10,6 +10,7 @@ void handleDisplay() {
   static uint32_t lastUpdate;                               // When the display was last updated (millis() value)
   if (millis() - lastUpdate > LCD_UPDATE_INTERVAL || updateDisplay) {
     lastUpdate = millis();
+    updateDisplay = false;
     switch (processState) {
       case SET_WEIGHTS:
         sprintf_P(linebuff, PSTR("B1: %3u   B2: %3u"), binTargetWeight[0], binTargetWeight[1]);
