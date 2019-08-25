@@ -56,10 +56,12 @@ const uint8_t completeLEDPin = 40;
    Various global variables.
  *******************************************************************************/
 int8_t binTargetWeight[NBINS];                              // The individual target weights of the bins (in kg).
-float binWeight[NBINS];                                     // The individual weights of the bins (in kg).
+//float binWeight[NBINS];                                     // The individual weights of the bins (in kg).
+uint16_t binWeight[NBINS];                                     // The individual weights of the bins (in kg).
 char systemStatus[21];                                      // A string, to be displayed on the LCD display.
 bool updateDisplay = true;                                  // Request immediate display update.
-float scaleWeight;                                          // The latest reading of the scale.
+//float scaleWeight;                                          // The latest reading of the scale.
+uint16_t scaleWeight;                                       // The latest reading of the scale.
 uint8_t selectedBin = NBINS;                                // The bin selected for setting target weight. Set to NBINS: no bin selected.
 uint8_t nBatches;                                           // The number of batches to run.
 uint8_t nBatch;                                             // The current batch number.

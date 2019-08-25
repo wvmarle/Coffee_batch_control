@@ -1,6 +1,6 @@
 void initInputs() {
   pinMode(encoderPushPin, INPUT_PULLUP);
-  
+
   pinMode(startButtonPin, INPUT_PULLUP);
   pinMode(startButtonLEDPin, OUTPUT);
   digitalWrite(startButtonLEDPin, LOW);
@@ -8,16 +8,16 @@ void initInputs() {
   pinMode(batchSelectionButtonPin, INPUT_PULLUP);
   pinMode(batchSelectionLEDPin, OUTPUT);
   digitalWrite(batchSelectionLEDPin, LOW);
-  
+
   pinMode(stopButtonPin, INPUT_PULLUP);
-  
+
   pinMode(INPUT1, INPUT_PULLUP);
   pinMode(INPUT1LEDPin, OUTPUT);
   digitalWrite(INPUT1LEDPin, LOW);
-  
+
   pinMode(completeLEDPin, OUTPUT);
   digitalWrite(completeLEDPin, LOW);
-  
+
   pinMode(stopButtonLEDPin, OUTPUT);
   digitalWrite(stopButtonLEDPin, LOW);
   pinMode(dischargeValvePin, OUTPUT);
@@ -39,6 +39,11 @@ void handleInputs() {
   static bool lastStopState;
   int32_t encoderPosition = setWeightEncoder.read() / 2;    // Read the current encoder input.
   digitalWrite(INPUT1LEDPin, digitalRead(INPUT1));          // Have INPUT1LED follow the state of INPUT1.
+
+  if (digitalRead(stopButtonPin) == LOW) {
+    Serial.println(F("Stop button pressed."));
+  }
+
   switch (processState) {
     case SET_WEIGHTS:
       if (selectedBin == NBINS &&                           // No bin selected so not setting a bin quantity,
@@ -55,7 +60,7 @@ void handleInputs() {
           updateDisplay = true;
           nBatch = 0;                                       // It's the first batch.
           digitalWrite(startButtonLEDPin, HIGH);            // Switch on the button's LED.
-          //          }
+          Serial.println(F("Standby for filling batch 1."));
         }
         else {
           for (uint8_t i = 0; i < NBINS; i++) {             // Check for bin selection button presses.
@@ -100,9 +105,11 @@ void handleInputs() {
     case FILLING_PAUSE:
     case DISCHARGE_BATCH:
       if (digitalRead(stopButtonPin) == LOW) {              // When stop pressed: interrupt the process.
+        Serial.println(F("Stop button pressed; halting the process."));
         processState = STOPPED;
         digitalWrite(stopButtonLEDPin, HIGH);               // Switch on the LED in the stop button.
         digitalWrite(startButtonLEDPin, LOW);               // Switch off the LED in the start button.
+        lastStopPressed = millis();                         // Record when it happened.
       }
       stateWhenInterrupted = processState;
       break;
@@ -117,17 +124,20 @@ void handleInputs() {
         }
         else if (millis() - lastStopPressed > CANCEL_DELAY) { // It's pressed long enough: cancel process.
           digitalWrite(stopButtonLEDPin, LOW);              // Switch off the LED in the stop button.
+          Serial.println(F("Long press on cancel recorded; returning to set_weights."));
           processState = SET_WEIGHTS;
           strcpy_P(systemStatus, PSTR(""));
         }
       }
-      else {
+      else if (millis() - lastStopPressed > 50) {           // Delay for debounce.
         if (lastStopState == LOW) {
           strcpy_P(systemStatus, PSTR(""));
+          updateDisplay = true;
         }
         lastStopState = HIGH;                               // Button not pressed.
       }
       if (digitalRead(startButtonPin) == LOW) {             // Start button pressed.
+        Serial.println(F("Start button pressed while stopped; continuing."));
         digitalWrite(stopButtonLEDPin, LOW);                // Switch off the LED in the stop button.
         digitalWrite(startButtonLEDPin, HIGH);              // Switch on the LED in the start button.
         processState = stateWhenInterrupted;                // Continue where we were.
@@ -138,6 +148,8 @@ void handleInputs() {
 
     case COMPLETED:
       bool action = false;
+      digitalWrite(startButtonLEDPin, LOW);             // Switch off the LED of the Start button.
+      digitalWrite(completeLEDPin, HIGH);               // Switch on the "complete" LED.
       if (digitalRead(batchSelectionButtonPin) == LOW ||    // Batch selection button pressed, or
           digitalRead(startButtonPin) == LOW ||             // Start button pressed, or
           digitalRead(stopButtonPin) == LOW ||              // Stop button pressed, or
@@ -153,6 +165,7 @@ void handleInputs() {
       if (action) {                                         // User did something: clear complete status.
         processState = SET_WEIGHTS;
         digitalWrite(completeLEDPin, LOW);                  // Switch off the "complete" LED.
+        Serial.println(F("User action; going to set_weights."));
       }
       break;
   }
