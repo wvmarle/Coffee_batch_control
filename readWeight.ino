@@ -26,12 +26,6 @@ void readWeight() {
         if (c == STX) {
           receiveState = RECEIVING;
         }
-        else {
-          Serial.println();
-          Serial.print(F("Unexpected STX character 0x"));
-          Serial.print(c, HEX);
-          Serial.println(F(" received."));
-        }
         break;
 
       case RECEIVING:
@@ -45,13 +39,6 @@ void readWeight() {
           if ((c >= '0' && c <= '9') || c == '.' || c == ' ' ) {
             buff[nChars - 1] = c;
             nChars++;
-          }
-          else {
-            Serial.println();
-            Serial.print(F("Unexpected WEIGHT character 0x"));
-            Serial.print(c, HEX);
-            Serial.print(F(" at position "));
-            Serial.println(nChars);
           }
           if (nChars == 8) {
             buff[7] = 0;
@@ -67,22 +54,12 @@ void readWeight() {
           if (c == 'G' || c == 'N' || c == 'U' || c == 'O' || c == 'E' || c == 'M') {
             stat = c;
           }
-          else {
-            Serial.println();
-            Serial.print(F("Unexpected STATUS character 0x"));
-            Serial.println(c, HEX);
-          }
           receiveState = COMPLETING;
         }
         break;
 
       case COMPLETING:
-        if (c != ETX) {
-          Serial.println();
-          Serial.print(F("Unexpected ETX character 0x"));
-          Serial.println(c, HEX);
-        }
-        else {
+        if (c == ETX) {
           float f = atof(buff);
           scaleWeight = f;
         }
