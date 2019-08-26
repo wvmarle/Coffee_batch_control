@@ -50,7 +50,7 @@ void handleDisplay() {
       case STANDBY:
       case FILLING_BIN:
       case FILLING_PAUSE:
-        sprintf_P(linebuff, PSTR("%4i kg, #%i"), scaleWeight, nBatch);
+        sprintf_P(linebuff, PSTR("%4i kg, #%i/%i"), scaleWeight, nBatch, nBatches);
         break;
 
       case DISCHARGE_BATCH:
@@ -58,7 +58,7 @@ void handleDisplay() {
         uint32_t timeToGo = BATCH_DISCHARGE_TIME - timePassed;
         uint8_t minutes = timeToGo / 60000ul;
         uint8_t seconds = uint32_t(timeToGo / 1000ul) % 60;
-        sprintf_P(linebuff, PSTR("%4i kg, #%i %2u:%2u"), scaleWeight, nBatch, minutes, seconds);
+        sprintf_P(linebuff, PSTR("%4i kg, #%i/%i %2u:%2u"), scaleWeight, nBatch, nBatches, minutes, seconds);
         break;
 
       case STOPPED:

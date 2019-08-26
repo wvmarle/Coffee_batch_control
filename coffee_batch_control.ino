@@ -4,10 +4,10 @@
 /*******************************************************************************
    Timing and other settings.
  *******************************************************************************/
-uint32_t LCD_UPDATE_INTERVAL = 500;                         // How often to update the LCD display (interval in ms).
-uint32_t BATCH_DISCHARGE_TIME = 4 * 60 * 1000;              // For how long to keep buttefly valve 5 open (in ms).
-uint32_t FILL_PAUSE_TIME = 10000;                           // 10 second delay between filling bins, to allow scale to stabilise.
-uint32_t CANCEL_DELAY = 1000;                               // Time in ms to hold the Stop button to cancel the process.
+const uint32_t LCD_UPDATE_INTERVAL = 500;                   // How often to update the LCD display (interval in ms).
+const uint32_t BATCH_DISCHARGE_TIME = 240000;               // For how long to keep buttefly valve 5 open (in ms).
+const uint32_t FILL_PAUSE_TIME = 10000;                     // 10 second delay between filling bins, to allow scale to stabilise.
+const uint32_t CANCEL_DELAY = 1000;                         // Time in ms to hold the Stop button to cancel the process.
 const uint8_t MIN_WEIGHT = 0;                               // Minimum weight that can be selected for a bin (in kg).
 const uint8_t MAX_WEIGHT = 100;                             // Maximum weight that can be selected for a bin (in kg).
 const uint8_t MAX_BATCHES = 255;                            // Maximum number of batches that can be set.
