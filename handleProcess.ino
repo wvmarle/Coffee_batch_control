@@ -1,6 +1,7 @@
+uint8_t fillingBin;                                         // Which bin we're currently filling (or going to fill).
+
 void handleProcess() {
   static uint16_t startWeight;                              // Scale's weight indication at the start of a fill process.
-  static uint8_t fillingBin;                                // Which bin to fill.
   static uint32_t lastPrint;
   switch (processState) {
     case SET_WEIGHTS:                                       // User is setting weights and number of batches. Nothing to do here.
@@ -8,15 +9,12 @@ void handleProcess() {
 
     case STANDBY:                                           // Waiting for INPUT1 to go HIGH.
       if (digitalRead(INPUT1) == HIGH) {                    // INPUT1 HIGH: can start the batch.
-        processState = FILLING_BIN;                         // We start filling the bin.
         fillingBin = 0;                                     // Start filling the first bin.
-        openValve(fillingBin);                              // Open valve for that bin.
-        strcpy_P(systemStatus, PSTR("Filling hopper 1..."));
-        updateDisplay = true;
         startWeight = scaleWeight;                          // The weight at the start of this process.
         for (uint8_t i = 0; i < NBINS; i++) {               // Reset the bin weights for proper display.
           binWeight[fillingBin] = 0;
         }
+        setState(FILLING_BIN);                              // We start filling the bin.
       }
       break;
 
@@ -24,10 +22,10 @@ void handleProcess() {
       binWeight[fillingBin] = scaleWeight - startWeight;    // Record the weight added to this bin.
       if (binWeight[fillingBin] >= binTargetWeight[fillingBin]) { // This one is complete.
         closeValves();                                      // Close the valves.
-        processState = FILLING_PAUSE;                       // Take a break for the scale to stabilise.
-        lastFillCompleteTime = millis();
+        lastFillCompleteTime = millis();                    // Record when we completed this one.
         sprintf_P(systemStatus, PSTR("Hopper %u filled."), fillingBin + 1);
         updateDisplay = true;
+        setState(FILLING_PAUSE);                            // Take a break for the scale to stabilise.
       }
       break;
 
@@ -36,18 +34,12 @@ void handleProcess() {
       if (millis() - lastFillCompleteTime > FILL_PAUSE_TIME) { // When time's up:
         fillingBin++;                                       // Next bin (if any).
         if (fillingBin < NBINS) {                           // We have bins left to fill.
-          processState = FILLING_BIN;
           startWeight = scaleWeight;
-          openValve(fillingBin);                            // Open valve for that bin.
-          sprintf_P(systemStatus, PSTR("Filling hopper %u..."), fillingBin + 1);
-          updateDisplay = true;
+          setState(FILLING_BIN);
         }
         else {                                              // All bins filled.
-          processState = DISCHARGE_BATCH;                   // Continue the process: discharge the batch through the discharge valve.
-          lastFillCompleteTime = millis();
-          sprintf_P(systemStatus, PSTR("Discharge batch %u."), nBatch + 1);
-          updateDisplay = true;
-          digitalWrite(dischargeValvePin, HIGH);                // Open the valve.
+          lastFillCompleteTime = millis();                  // Record when the pause was over.
+          setState(DISCHARGE_BATCH);                        // Continue the process: discharge the batch through the discharge valve.
         }
       }
       break;
@@ -60,15 +52,13 @@ void handleProcess() {
         digitalWrite(dischargeValvePin, LOW);               // Close the valve again.
         nBatch++;                                           // Go to the next batch.
         if (nBatch == nBatches) {                           // If we're done,
-          processState = COMPLETED;                         // set process to "completed" state, and
           nBatches = 1;                                     // reset the number of batches to 1.
           strcpy_P(systemStatus, PSTR("Complete."));
           updateDisplay = true;
+          setState(COMPLETED);                              // set process to "completed" state, and
         }
         else {                                              // Otherwise go standby for the next batch.
-          sprintf_P(systemStatus, PSTR("Standby batch %u..."), nBatch + 1);
-          updateDisplay = true;
-          processState = STANDBY;
+          setState(STANDBY);
         }
       }
       break;
@@ -106,4 +96,60 @@ uint16_t totalWeight() {                                    // Calculate the tot
     total += binTargetWeight[i];
   }
   return total;
+}
+
+// Set the system up for the requested process state: this includes setting the appropriate LEDs, open/close valves, etc.
+void setState(ProcessStates state) {
+  switch (state) {
+    case SET_WEIGHTS:
+      digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
+      digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
+      digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      break;
+
+    case STANDBY:
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
+      digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
+      digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      sprintf_P(systemStatus, PSTR("Standby batch %u..."), nBatch + 1);
+      updateDisplay = true;
+      break;
+
+    case FILLING_BIN:
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
+      digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
+      digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      openValve(fillingBin);                                // Open valve for the bin we're going to fill.
+      sprintf_P(systemStatus, PSTR("Filling hopper %u..."), fillingBin + 1);
+      updateDisplay = true;
+      break;
+
+    case FILLING_PAUSE:
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
+      digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
+      digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      break;
+
+    case DISCHARGE_BATCH:
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
+      digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
+      digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      sprintf_P(systemStatus, PSTR("Discharge batch %u."), nBatch + 1);
+      updateDisplay = true;
+      digitalWrite(dischargeValvePin, HIGH);                // Open the valve.
+      break;
+
+    case STOPPED:
+      digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED in the start button.
+      digitalWrite(stopButtonLEDPin, HIGH);                 // Switch on the LED in the stop button.
+      digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      break;
+
+    case COMPLETED:
+      digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
+      digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
+      digitalWrite(completeLEDPin, HIGH);                   // Switch on the "complete" LED.
+      break;
+  }
+  processState = state;
 }
