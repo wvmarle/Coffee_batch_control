@@ -22,7 +22,7 @@ void handleProcess() {
       break;
 
     case FILLING_BIN:                                       // Open the valves one by one; add material.
-      binWeight[fillingBin] = startWeight - scaleWeight;    // Record the weight added to this bin.
+      binWeight[fillingBin] = scaleWeight - startWeight;    // Record the weight added to this bin.
 //      if (millis() - lastPrint > 1000) {
 //        lastPrint = millis();
 //        Serial.print(F("Filling bin: "));
