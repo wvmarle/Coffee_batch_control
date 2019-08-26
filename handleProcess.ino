@@ -51,7 +51,7 @@ void handleProcess() {
       break;
 
     case FILLING_PAUSE:                                     // Wait a bit... allow scale to stabilise.
-      binWeight[fillingBin] = startWeight - scaleWeight;    // Continue to record the weight of this bin.
+      binWeight[fillingBin] = scaleWeight - startWeight;    // Continue to record the weight of this bin.
       if (millis() - lastFillCompleteTime > FILL_PAUSE_TIME) { // When time's up:
         fillingBin++;                                       // Next bin (if any).
         if (fillingBin < NBINS) {                           // We have bins left to fill.
