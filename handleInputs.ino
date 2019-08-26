@@ -39,11 +39,6 @@ void handleInputs() {
   static bool lastStopState;
   int32_t encoderPosition = setWeightEncoder.read() / 2;    // Read the current encoder input.
   digitalWrite(INPUT1LEDPin, digitalRead(INPUT1));          // Have INPUT1LED follow the state of INPUT1.
-
-  if (digitalRead(stopButtonPin) == LOW) {
-    Serial.println(F("Stop button pressed."));
-  }
-
   switch (processState) {
     case SET_WEIGHTS:
       if (selectedBin == NBINS &&                           // No bin selected so not setting a bin quantity,

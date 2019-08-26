@@ -2,6 +2,14 @@ void initDisplay() {
   lcd.begin(20, 4);
   pinMode(LCD_BACKLIGHT_PIN, OUTPUT);
   digitalWrite(LCD_BACKLIGHT_PIN, HIGH);                    // Switch backlight on. We won't switch it off anytime during operation.
+  
+  // A 4-line welcome message will be displayed for 5 seconds.
+  // 20 chars: "--------------------" Don't exceed this length!                   
+  printLine(0, "      Welcome!");
+  printLine(1, " Coffee batch mixer");
+  printLine(2, "");
+  printLine(3, "  Caffeine rules!");
+  delay(5000);                                              // Show message for 5 seconds.
   updateDisplay = true;                                     // Have it updated right away.
 }
 
@@ -48,8 +56,8 @@ void handleDisplay() {
       case DISCHARGE_BATCH:
         uint32_t timePassed = millis() - lastFillCompleteTime;
         uint32_t timeToGo = BATCH_DISCHARGE_TIME - timePassed;
-        uint8_t minutes = int((float)timeToGo / (60 * 1000));
-        uint8_t seconds = int(timeToGo / 1000.0) % 60;
+        uint8_t minutes = timeToGo / 60000ul;
+        uint8_t seconds = uint32_t(timeToGo / 1000ul) % 60;
         sprintf_P(linebuff, PSTR("%3u kg, #%u %2u:%2u"), scaleWeight, nBatch, minutes, seconds);
         break;
 

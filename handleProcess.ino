@@ -23,21 +23,6 @@ void handleProcess() {
 
     case FILLING_BIN:                                       // Open the valves one by one; add material.
       binWeight[fillingBin] = scaleWeight - startWeight;    // Record the weight added to this bin.
-//      if (millis() - lastPrint > 1000) {
-//        lastPrint = millis();
-//        Serial.print(F("Filling bin: "));
-//        Serial.print(fillingBin);
-//        Serial.print(F(", startWeight: "));
-//        Serial.print(startWeight);
-//        Serial.print(F(", current scaleWeight: "));
-//        Serial.print(scaleWeight);
-//        Serial.print(F(", bin weight: "));
-//        Serial.print(binWeight[fillingBin]);
-//        Serial.print(F(", target weight: "));
-//        Serial.print(binTargetWeight[fillingBin]);
-//        Serial.print(F(", current batch: "));
-//        Serial.println(nBatch);
-//      }
       if (binWeight[fillingBin] >= binTargetWeight[fillingBin]) { // This one is complete.
         closeValves();                                      // Close the valves.
         processState = FILLING_PAUSE;                       // Take a break for the scale to stabilise.
