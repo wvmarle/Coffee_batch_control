@@ -31,10 +31,17 @@ void handleDisplay() {
 
       case FILLING_BIN:
       case FILLING_PAUSE:
-        sprintf_P(linebuff, PSTR("B1: %2i/%2i B2: %2i/%2i"), binWeight[0], binTargetWeight[0], binWeight[1]), binTargetWeight[1];
+#ifdef SHOW_TARGET
+        sprintf_P(linebuff, PSTR("B1: %2i/%2i B2: %2i/%2i"), binWeight[0], binTargetWeight[0], binWeight[1], binTargetWeight[1]);
+        printLine(linebuff, 0);                           // Line 0: the current/target weights of bins 1 and 2.
+        sprintf_P(linebuff, PSTR("B3: %2i/%2i B4: %2i/%2i"), binWeight[2], binTargetWeight[2], binWeight[3], binTargetWeight[3]);
+        printLine(linebuff, 1);                           // Line 1: the current/target weights of bins 3 and 4.
+#else
+        sprintf_P(linebuff, PSTR("B1: %3i  B2: %3i"), binWeight[0], binWeight[1]);
         printLine(linebuff, 0);                           // Line 0: the current weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B3: %2i/%2i B4: %2i/%2i"), binWeight[2], binTargetWeight[2], binWeight[3]), binTargetWeight[3];
+        sprintf_P(linebuff, PSTR("B3: %3i  B4: %3i"), binWeight[2], binWeight[3]);
         printLine(linebuff, 1);                           // Line 1: the current weights of bins 3 and 4.
+#endif
         break;
 
       case STANDBY:
