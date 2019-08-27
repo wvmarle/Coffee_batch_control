@@ -16,25 +16,25 @@ void initDisplay() {
 }
 
 void handleDisplay() {
-  static char linebuff[21];                                 // General buffer for a line of text.
+  static char linebuff[30];                                 // General buffer for a line of text - with some space for overrun, which will be truncated later.
   static uint32_t lastUpdate;                               // When the display was last updated (millis() value)
   if (millis() - lastUpdate > LCD_UPDATE_INTERVAL || updateDisplay) {
     lastUpdate = millis();
     updateDisplay = false;
     switch (processState) {
       case SET_WEIGHTS:
-        sprintf_P(linebuff, PSTR("B1: %4i  B2: %4i"), binTargetWeight[0], binTargetWeight[1]);
+        sprintf_P(linebuff, PSTR("B1: %3i   B2: %3i"), binTargetWeight[0], binTargetWeight[1]);
         printLine(linebuff, 0);                             // Line 0: the target weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B3: %4i  B4: %4i"), binTargetWeight[2], binTargetWeight[3]);
+        sprintf_P(linebuff, PSTR("B3: %3i   B4: %3i"), binTargetWeight[2], binTargetWeight[3]);
         printLine(linebuff, 1);                             // Line 1: the target weights of bins 3 and 4.
         break;
 
       case FILLING_BIN:
       case FILLING_PAUSE:
-        sprintf_P(linebuff, PSTR("B1: %4i  B2: %4i"), binWeight[0], binWeight[1]);
+        sprintf_P(linebuff, PSTR("B1: %2i/%2i B2: %2i/%2i"), binWeight[0], binTargetWeight[0], binWeight[1]), binTargetWeight[1];
         printLine(linebuff, 0);                           // Line 0: the current weights of bins 1 and 2.
-        sprintf_P(linebuff, PSTR("B3: %4i  B4: %4i"), binWeight[2], binWeight[3]);
-        printLine(linebuff, 1);                           // Line 1: the current weights of bins 2 and 3.
+        sprintf_P(linebuff, PSTR("B3: %2i/%2i B4: %2i/%2i"), binWeight[2], binTargetWeight[2], binWeight[3]), binTargetWeight[3];
+        printLine(linebuff, 1);                           // Line 1: the current weights of bins 3 and 4.
         break;
 
       case STANDBY:
@@ -71,10 +71,10 @@ void handleDisplay() {
 }
 
 ////////////////////////////////////////////////////////////////////
-// Print line to display; pad with spaces to 16 characters to remove stray characters.
+// Print line to display; pad with spaces to 20 characters to remove stray characters.
 void printLine(const char *lineToPrint, uint8_t line) {
   char printBuffer[21];
   lcd.setCursor(0, line);
-  sprintf_P(printBuffer, PSTR("%-20s"), lineToPrint);       // Pad with trailing spaces to total length of 20 characters.
+  snprintf_P(printBuffer, 21, PSTR("%-20s"), lineToPrint);  // Pad with trailing spaces to total length of 20 characters, but also not more than that.
   lcd.print(printBuffer);
 }

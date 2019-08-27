@@ -100,7 +100,7 @@ void handleInputs() {
       if (digitalRead(stopButtonPin) == LOW) {              // When stop pressed: interrupt the process.
         stateWhenInterrupted = processState;
         timeWhenInterrupted = millis();                     // Record when we were paused.
-        lastStopPressed = millis();                         // Record when the button was pressed.        
+        lastStopPressed = millis();                         // Record when the button was pressed.
         setState(STOPPED);
       }
       break;
@@ -115,13 +115,11 @@ void handleInputs() {
         }
         else if (millis() - lastStopPressed > CANCEL_DELAY) { // It's pressed long enough: cancel process.
           setState(SET_WEIGHTS);
-          strcpy_P(systemStatus, PSTR(""));
-          updateDisplay = true;
         }
       }
       else if (millis() - lastStopPressed > 50) {           // Delay for debounce.
         if (lastStopState == LOW) {
-          strcpy_P(systemStatus, PSTR(""));
+          strcpy_P(systemStatus, PSTR("Paused."));
           updateDisplay = true;
         }
         lastStopState = HIGH;                               // Button not pressed.

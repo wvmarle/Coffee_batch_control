@@ -21,10 +21,7 @@ void handleProcess() {
     case FILLING_BIN:                                       // Open the valves one by one; add material.
       binWeight[fillingBin] = scaleWeight - startWeight;    // Record the weight added to this bin.
       if (binWeight[fillingBin] >= binTargetWeight[fillingBin]) { // This one is complete.
-        closeValves();                                      // Close the valves.
         lastFillCompleteTime = millis();                    // Record when we completed this one.
-        sprintf_P(systemStatus, PSTR("Hopper %u filled."), fillingBin + 1);
-        updateDisplay = true;
         setState(FILLING_PAUSE);                            // Take a break for the scale to stabilise.
       }
       break;
@@ -53,8 +50,6 @@ void handleProcess() {
         nBatch++;                                           // Go to the next batch.
         if (nBatch == nBatches) {                           // If we're done,
           nBatches = 1;                                     // reset the number of batches to 1.
-          strcpy_P(systemStatus, PSTR("Complete."));
-          updateDisplay = true;
           setState(COMPLETED);                              // set process to "completed" state, and
         }
         else {                                              // Otherwise go standby for the next batch.
@@ -63,9 +58,7 @@ void handleProcess() {
       }
       break;
 
-    case STOPPED:                                           // User interrupt. Close all valves.
-      closeValves();                                        // Close all input valves,
-      digitalWrite(dischargeValvePin, LOW);                 // and the output valve.
+    case STOPPED:                                           // User paused. Nothing to do until user takes further action.
       break;
 
     case COMPLETED:                                         // Process completed. Nothing to do until user takes further action.
@@ -105,6 +98,7 @@ void setState(ProcessStates state) {
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      strcpy_P(systemStatus, PSTR(""));
       break;
 
     case STANDBY:
@@ -112,7 +106,6 @@ void setState(ProcessStates state) {
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       sprintf_P(systemStatus, PSTR("Standby batch %u..."), nBatch + 1);
-      updateDisplay = true;
       break;
 
     case FILLING_BIN:
@@ -121,13 +114,14 @@ void setState(ProcessStates state) {
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       openValve(fillingBin);                                // Open valve for the bin we're going to fill.
       sprintf_P(systemStatus, PSTR("Filling hopper %u..."), fillingBin + 1);
-      updateDisplay = true;
       break;
 
     case FILLING_PAUSE:
       digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      closeValves();                                        // Close the valves.
+      sprintf_P(systemStatus, PSTR("Hopper %u filled."), fillingBin + 1);
       break;
 
     case DISCHARGE_BATCH:
@@ -135,21 +129,25 @@ void setState(ProcessStates state) {
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       sprintf_P(systemStatus, PSTR("Discharge batch %u."), nBatch + 1);
-      updateDisplay = true;
-      digitalWrite(dischargeValvePin, HIGH);                // Open the valve.
+      digitalWrite(dischargeValvePin, HIGH);                // Open the discharge valve (butterfly valve 5).
       break;
 
     case STOPPED:
       digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED in the start button.
       digitalWrite(stopButtonLEDPin, HIGH);                 // Switch on the LED in the stop button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      closeValves();                                        // Close all input valves,
+      digitalWrite(dischargeValvePin, LOW);                 // and the output valve.
+      strcpy_P(systemStatus, PSTR("Paused."));
       break;
 
     case COMPLETED:
       digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, HIGH);                   // Switch on the "complete" LED.
+      strcpy_P(systemStatus, PSTR("Complete."));
       break;
   }
   processState = state;
+  updateDisplay = true;
 }
