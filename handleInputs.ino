@@ -128,8 +128,6 @@ void handleInputs() {
         digitalWrite(stopButtonLEDPin, LOW);                // Switch off the LED in the stop button.
         digitalWrite(startButtonLEDPin, HIGH);              // Switch on the LED in the start button.
         setState(stateWhenInterrupted);                     // Continue where we were.
-        strcpy_P(systemStatus, PSTR(""));
-        updateDisplay = true;
         if (stateWhenInterrupted == DISCHARGE_BATCH) {      // We have to recalculate the start time, to correct for the time we were paused.
           lastFillCompleteTime += millis() - timeWhenInterrupted;
         }

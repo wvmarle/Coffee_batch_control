@@ -12,7 +12,7 @@ void handleProcess() {
         fillingBin = 0;                                     // Start filling the first bin.
         startWeight = scaleWeight;                          // The weight at the start of this process.
         for (uint8_t i = 0; i < NBINS; i++) {               // Reset the bin weights for proper display.
-          binWeight[fillingBin] = 0;
+          binWeight[i] = 0;
         }
         setState(FILLING_BIN);                              // We start filling the bin.
       }
