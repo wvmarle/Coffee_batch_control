@@ -11,6 +11,7 @@ const uint32_t CANCEL_DELAY = 1000;                         // Time in ms to hol
 const uint8_t MIN_WEIGHT = 0;                               // Minimum weight that can be selected for a bin (in kg).
 const uint8_t MAX_WEIGHT = 100;                             // Maximum weight that can be selected for a bin (in kg).
 const uint8_t MAX_BATCHES = 255;                            // Maximum number of batches that can be set.
+const uint32_t TIMER_DELAY = 180000;                        // For how long to keep the timer high.
 
 #define SHOW_TARGET                                         // Uncomment to not show target weight when filling.
 
@@ -50,6 +51,9 @@ LiquidCrystal lcd(LCD_RS_PIN, LCD_E_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD
 const uint8_t INPUT1LEDPin = 33;
 const uint8_t completeLEDPin = 40;
 
+const uint8_t timerInput = 43;
+const uint8_t timerOutput = 42;
+
 /*******************************************************************************
    Various global variables.
  *******************************************************************************/
@@ -78,6 +82,7 @@ void setup() {
   initDisplay();
   initInputs();
   processState = SET_WEIGHTS;
+  initTimer();
 }
 
 void loop() {
@@ -85,4 +90,5 @@ void loop() {
   handleDisplay();                                          // Keep the display up to date.
   handleInputs();                                           // Handle the button and encoder inputs.
   handleProcess();                                          // Handle the dispensing and batch mixing process.
+  handleTimer();
 }
