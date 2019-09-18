@@ -10,7 +10,7 @@ void initDisplay() {
   lcd.setCursor(0, 1);
   lcd.print(F(" Coffee batch mixer"));
   lcd.setCursor(0, 3);
-  lcd.print(F("  Caffeine rules!"));
+  lcd.print(F("   Made in Italy!"));
   delay(5000);                                              // Show message for 5 seconds.
   updateDisplay = true;                                     // Have it updated right away.
 }

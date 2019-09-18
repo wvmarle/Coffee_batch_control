@@ -5,15 +5,15 @@
    Timing and other settings.
  *******************************************************************************/
 const uint32_t LCD_UPDATE_INTERVAL = 500;                   // How often to update the LCD display (interval in ms).
-const uint32_t BATCH_DISCHARGE_TIME = 240000;               // For how long to keep buttefly valve 5 open (in ms).
+const uint32_t BATCH_DISCHARGE_TIME = 180000;               // For how long to keep buttefly valve 5 open (in ms).
 const uint32_t FILL_PAUSE_TIME = 10000;                     // 10 second delay between filling bins, to allow scale to stabilise.
 const uint32_t CANCEL_DELAY = 1000;                         // Time in ms to hold the Stop button to cancel the process.
 const uint8_t MIN_WEIGHT = 0;                               // Minimum weight that can be selected for a bin (in kg).
 const uint8_t MAX_WEIGHT = 100;                             // Maximum weight that can be selected for a bin (in kg).
-const uint8_t MAX_BATCHES = 255;                            // Maximum number of batches that can be set.
+const uint8_t MAX_BATCHES = 50;                            // Maximum number of batches that can be set.
 const uint32_t TIMER_DELAY = 180000;                        // For how long to keep the timer high.
 
-#define SHOW_TARGET                                         // Uncomment to not show target weight when filling.
+//#define SHOW_TARGET                                         // Uncomment to not show target weight when filling.
 
 /*******************************************************************************
    Pin definitions.
@@ -34,9 +34,9 @@ const uint8_t batchSelectionLEDPin = 36;                    // The LED inside th
 const uint8_t stopButtonPin = 37;                           // The stop button (halts the process).
 const uint8_t stopButtonLEDPin = 38;                        // The stop button (halts the process).
 
-const uint8_t butterflyValvePin[NBINS] = {22, 23, 24, 25};  // Connections to the four butterfly valves handling the input hoppers.
-const uint8_t dischargeValvePin = 26;                       // Connection to the fifth butterfly valve, handling the discharge.
-const uint8_t INPUT1 = 39;                                  // INPUT1: if High, a batch can start running, if Low remain in standby.
+const uint8_t butterflyValvePin[NBINS] = {50, 51, 52, 53};  // Connections to the four butterfly valves handling the input hoppers.
+const uint8_t dischargeValvePin = 47;                       // Connection to the fifth butterfly valve, handling the discharge.
+const uint8_t INPUT1 = 40;                                  // INPUT1: if High, a batch can start running, if Low remain in standby.
 
 // Display pin assignments.
 const uint8_t LCD_RS_PIN = 27;
@@ -45,14 +45,14 @@ const uint8_t LCD_D4_PIN = 29;
 const uint8_t LCD_D5_PIN = 30;
 const uint8_t LCD_D6_PIN = 31;
 const uint8_t LCD_D7_PIN = 32;
-const uint8_t LCD_BACKLIGHT_PIN = 44;
+const uint8_t LCD_BACKLIGHT_PIN = 39;
 LiquidCrystal lcd(LCD_RS_PIN, LCD_E_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
 
-const uint8_t INPUT1LEDPin = 33;
-const uint8_t completeLEDPin = 40;
+const uint8_t INPUT1LEDPin = 48;
+const uint8_t completeLEDPin = 49;
 
 const uint8_t timerInput = 43;
-const uint8_t timerOutput = 42;
+const uint8_t timerOutput = 46;
 
 /*******************************************************************************
    Various global variables.
@@ -63,7 +63,7 @@ char systemStatus[21];                                      // A string, to be d
 bool updateDisplay = true;                                  // Request immediate display update.
 uint16_t scaleWeight;                                       // The latest reading of the scale.
 uint8_t selectedBin = NBINS;                                // The bin selected for setting target weight. Set to NBINS: no bin selected.
-uint8_t nBatches;                                           // The number of batches to run.
+uint8_t nBatches = 1;                                       // The number of batches to run.
 uint8_t nBatch;                                             // The current batch number.
 uint32_t lastFillCompleteTime;                              // When the last bin filling was completed, or when the discharge started.
 
