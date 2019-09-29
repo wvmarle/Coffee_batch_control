@@ -75,12 +75,14 @@ void openValve(uint8_t valve) {
       digitalWrite(butterflyValvePin[i], LOW);              // Close all the others.
     }
   }
+  digitalWrite(valveOpenIndicatorPin, HIGH);
 }
 
 void closeValves() {                                        // Close all the valves.
   for (uint8_t i = 0; i < NBINS; i++) {
     digitalWrite(butterflyValvePin[i], LOW);
   }
+  digitalWrite(valveOpenIndicatorPin, LOW);
 }
 
 uint16_t totalWeight() {                                    // Calculate the total weight of the batch as currently set.

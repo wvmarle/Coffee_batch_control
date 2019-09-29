@@ -37,7 +37,7 @@ const uint8_t stopButtonLEDPin = 38;                        // The stop button (
 const uint8_t butterflyValvePin[NBINS] = {50, 51, 52, 53};  // Connections to the four butterfly valves handling the input hoppers.
 const uint8_t dischargeValvePin = 47;                       // Connection to the fifth butterfly valve, handling the discharge.
 const uint8_t INPUT1 = 40;                                  // INPUT1: if High, a batch can start running, if Low remain in standby.
-
+const uint8_t valveOpenIndicatorPin = 45;                   // Pin goes high when any of the butterfly valves is open, low otherwise.
 // Display pin assignments.
 const uint8_t LCD_RS_PIN = 27;
 const uint8_t LCD_E_PIN = 28;
