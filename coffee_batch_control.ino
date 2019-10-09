@@ -5,13 +5,13 @@
    Timing and other settings.
  *******************************************************************************/
 const uint32_t LCD_UPDATE_INTERVAL = 500;                   // How often to update the LCD display (interval in ms).
-const uint32_t BATCH_DISCHARGE_TIME = 180000;               // For how long to keep buttefly valve 5 open (in ms).
-const uint32_t FILL_PAUSE_TIME = 10000;                     // 10 second delay between filling bins, to allow scale to stabilise.
-const uint32_t CANCEL_DELAY = 1000;                         // Time in ms to hold the Stop button to cancel the process.
+const uint32_t BATCH_DISCHARGE_TIME = 120000;               // For how long to keep buttefly valve 5 open (in ms).
+const uint32_t FILL_PAUSE_TIME = 6000;                     // 10 second delay between filling bins, to allow scale to stabilise.
+const uint32_t CANCEL_DELAY = 2000;                         // Time in ms to hold the Stop button to cancel the process.
 const uint8_t MIN_WEIGHT = 0;                               // Minimum weight that can be selected for a bin (in kg).
 const uint8_t MAX_WEIGHT = 100;                             // Maximum weight that can be selected for a bin (in kg).
-const uint8_t MAX_BATCHES = 50;                            // Maximum number of batches that can be set.
-const uint32_t TIMER_DELAY = 180000;                        // For how long to keep the timer high.
+const uint8_t MAX_BATCHES = 65;                            // Maximum number of batches that can be set.
+const uint32_t TIMER_DELAY = 120000;                        // For how long to keep the timer high.
 
 //#define SHOW_TARGET                                         // Uncomment to not show target weight when filling.
 
@@ -37,7 +37,7 @@ const uint8_t stopButtonLEDPin = 38;                        // The stop button (
 const uint8_t butterflyValvePin[NBINS] = {50, 51, 52, 53};  // Connections to the four butterfly valves handling the input hoppers.
 const uint8_t dischargeValvePin = 47;                       // Connection to the fifth butterfly valve, handling the discharge.
 const uint8_t INPUT1 = 40;                                  // INPUT1: if High, a batch can start running, if Low remain in standby.
-const uint8_t valveOpenIndicatorPin = 45;                   // Pin goes high when any of the butterfly valves is open, low otherwise.
+const uint8_t valveOpenIndicatorPin = 42;                   // Pin goes high when any of the butterfly valves is open, low otherwise.
 // Display pin assignments.
 const uint8_t LCD_RS_PIN = 27;
 const uint8_t LCD_E_PIN = 28;

@@ -30,6 +30,8 @@ void initInputs() {
     pinMode(butterflyValvePin[i], OUTPUT);
     digitalWrite(butterflyValvePin[i], LOW);
   }
+  pinMode(valveOpenIndicatorPin, OUTPUT);
+  digitalWrite(valveOpenIndicatorPin, LOW);
 }
 
 void handleInputs() {
