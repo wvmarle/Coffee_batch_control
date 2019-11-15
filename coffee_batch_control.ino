@@ -5,15 +5,15 @@
    Timing and other settings.
  *******************************************************************************/
 const uint32_t LCD_UPDATE_INTERVAL = 500;                   // How often to update the LCD display (interval in ms).
-const uint32_t BATCH_DISCHARGE_TIME = 120000;               // For how long to keep buttefly valve 5 open (in ms).
-const uint32_t FILL_PAUSE_TIME = 6000;                     // 10 second delay between filling bins, to allow scale to stabilise.
-const uint32_t CANCEL_DELAY = 2000;                         // Time in ms to hold the Stop button to cancel the process.
+const uint32_t BATCH_DISCHARGE_TIME = 90000;                // For how long to keep buttefly valve 5 open (in ms). The discharge valve + contactor K4,K5
+const uint32_t FILL_PAUSE_TIME = 5000;                      // 5 second delay between filling bins, to allow scale to stabilise.
+const uint32_t CANCEL_DELAY = 2000;                         // Time in ms to hold the Stop button to cancel the process. 2 seconds.
 const uint8_t MIN_WEIGHT = 0;                               // Minimum weight that can be selected for a bin (in kg).
 const uint8_t MAX_WEIGHT = 100;                             // Maximum weight that can be selected for a bin (in kg).
-const uint8_t MAX_BATCHES = 65;                            // Maximum number of batches that can be set.
-const uint32_t TIMER_DELAY = 120000;                        // For how long to keep the timer high.
+const uint8_t MAX_BATCHES = 50;                             // Maximum number of batches that can be set.
+const uint32_t TIMER_DELAY = 90000;                         // For how long to keep the timer high. Set for roasted beans transportation K6
 
-//#define SHOW_TARGET                                         // Uncomment to not show target weight when filling.
+//#define SHOW_TARGET                                       // Uncomment to not show target weight when filling.
 
 /*******************************************************************************
    Pin definitions.
@@ -23,7 +23,7 @@ const uint32_t TIMER_DELAY = 120000;                        // For how long to k
  *******************************************************************************/
 const uint8_t NBINS = 4;                                    // Number of bins in the system.
 Encoder setWeightEncoder(2, 3);                             // Rotary encoder for changing variables. At least one of the pins should be one of 2, 3, 20, 21.
-//                                                             Connect a 100 nF capacitor between pin and GND for debouncing!!
+                                                            //Connect a 100 nF capacitor between pin and GND for debouncing!!
 const uint8_t encoderPushPin = 4;                           // The encoder's push button - for confirming a selection.
 const uint8_t binSelectionButtonPin[NBINS] = {5, 6, 7, 8};  // The bin selection buttons (active LOW).
 const uint8_t binSelectionLEDPin[NBINS] = {9, 10, 11, 12};  // The LEDs inside the buttons (lit when selected).
@@ -36,8 +36,10 @@ const uint8_t stopButtonLEDPin = 38;                        // The stop button (
 
 const uint8_t butterflyValvePin[NBINS] = {50, 51, 52, 53};  // Connections to the four butterfly valves handling the input hoppers.
 const uint8_t dischargeValvePin = 47;                       // Connection to the fifth butterfly valve, handling the discharge.
-const uint8_t INPUT1 = 40;                                  // INPUT1: if High, a batch can start running, if Low remain in standby.
-const uint8_t valveOpenIndicatorPin = 42;                   // Pin goes high when any of the butterfly valves is open, low otherwise.
+const uint8_t INPUT1 = 40;                                  // INPUT1: if High, a batch can start running, if Low remain in standby.Connected with reley 83K1
+const uint8_t valveOpenIndicatorPin = 42;                   // Pin goes high when any of the butterfly bin valves is open, low otherwise. Need for allow inverter start.
+
+
 // Display pin assignments.
 const uint8_t LCD_RS_PIN = 27;
 const uint8_t LCD_E_PIN = 28;
@@ -45,14 +47,16 @@ const uint8_t LCD_D4_PIN = 29;
 const uint8_t LCD_D5_PIN = 30;
 const uint8_t LCD_D6_PIN = 31;
 const uint8_t LCD_D7_PIN = 32;
-const uint8_t LCD_BACKLIGHT_PIN = 39;
+const uint8_t LCD_BACKLIGHT_PIN = 39;                       //No connected on the hardware
+
+
 LiquidCrystal lcd(LCD_RS_PIN, LCD_E_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
 
-const uint8_t INPUT1LEDPin = 48;
-const uint8_t completeLEDPin = 49;
+const uint8_t INPUT1LEDPin = 48;                          // Pin LED when System ready to receive more green beans.83K1
+const uint8_t completeLEDPin = 49;                        // Pin LED when the all the batches are finish.
 
-const uint8_t timerInput = 43;
-const uint8_t timerOutput = 46;
+const uint8_t timerInput = 43;                           //INPUT2: Monitor when Gate K is open
+const uint8_t timerOutput = 46;                          //Pin goes high when input 43 is high.This pin stay high for a specific time set.
 
 /*******************************************************************************
    Various global variables.
