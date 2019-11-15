@@ -62,6 +62,7 @@ void readWeight() {
         if (c == ETX) {
           float f = atof(buff);
           scaleWeight = f;
+          latestWeightReceivedTime = millis();
         }
         receiveState = WAITING;
         nChars = 0;

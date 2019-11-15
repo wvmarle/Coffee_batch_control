@@ -15,6 +15,7 @@ const uint32_t TIMER_DELAY = 90000;                         // For how long to k
 
 const uint32_t COMPLETE_RELAY_DELAY = 5000;                 // After the batch is complete, wait for this time (in ms) before activating the complete relay.
 const uint32_t COMPLETE_RELAY_ONTIME = 5000;                // When the complete relay is activated, keep it activated for this period.
+const uint32_t SCALE_TIMEOUT = 500;                         // If this long (in ms) no weight received, scale is disconnected. It normally sends the weight 10x per second.
 
 //#define SHOW_TARGET                                       // Uncomment to not show target weight when filling.
 
@@ -77,6 +78,7 @@ uint8_t nBatch;                                             // The current batch
 uint32_t lastFillCompleteTime;                              // When the last bin filling was completed, or when the discharge started.
 bool isComplete;                                            // Indicate a complete batch has finished.
 uint32_t isCompleteTime;                                    // When the batch finished.
+uint32_t latestWeightReceivedTime;                          // Keep track of when we last got a weight.
 
 enum ProcessStates {                                        // The various states the process can be in:
   SET_WEIGHTS,                                              // Setting the weight (no batch process active).
@@ -86,6 +88,7 @@ enum ProcessStates {                                        // The various state
   DISCHARGE_BATCH,                                          // Final stage of the process: discharge the batch.
   STOPPED,                                                  // Stop button pressed - process halted.
   COMPLETED,                                                // All batches done; process complete.
+  WDT_TIMEOUT,                                              // Watchdog timer timeout: scale disconnected.
 } processState;
 
 void setup() {

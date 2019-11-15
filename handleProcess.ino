@@ -2,7 +2,8 @@ uint8_t fillingBin;                                         // Which bin we're c
 
 void handleProcess() {
   static uint16_t startWeight;                              // Scale's weight indication at the start of a fill process.
-//  static uint32_t lastPrint;
+  static ProcessStates oldState;                            // For the watchdog timer: keep track of what we were doing, so we can easily recover.
+  //  static uint32_t lastPrint;
   switch (processState) {
     case SET_WEIGHTS:                                       // User is setting weights and number of batches. Nothing to do here.
       break;
@@ -42,9 +43,9 @@ void handleProcess() {
       break;
 
     case DISCHARGE_BATCH:                                   // Empty the thing through the discharge valve.
-//      if (millis() - lastPrint > 1000) {
-//        lastPrint = millis();
-//      }
+      //      if (millis() - lastPrint > 1000) {
+      //        lastPrint = millis();
+      //      }
       if (millis() - lastFillCompleteTime > BATCH_DISCHARGE_TIME) { // If open long enough,
         digitalWrite(dischargeValvePin, LOW);               // Close the valve again.
         nBatch++;                                           // Go to the next batch.
@@ -63,6 +64,18 @@ void handleProcess() {
 
     case COMPLETED:                                         // Process completed. Nothing to do until user takes further action.
       break;
+
+    case WDT_TIMEOUT:
+      if (millis() - latestWeightReceivedTime < SCALE_TIMEOUT) { // We got communications again.
+        setState(oldState);
+      }
+  }
+
+  if (processState != WDT_TIMEOUT) {
+    if (millis() - latestWeightReceivedTime > SCALE_TIMEOUT) { // Watchdog: scale does not send data.
+      oldState = processState;                              // Remember what we were doing, so we can recover.
+      setState(WDT_TIMEOUT);                                // Timeout state!
+    }
   }
 }
 
@@ -151,6 +164,15 @@ void setState(ProcessStates state) {
       isComplete = true;
       isCompleteTime = millis();
       break;
+
+    case WDT_TIMEOUT:
+      digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
+      digitalWrite(stopButtonLEDPin, HIGH);                 // Switch on the LED in the stop button.
+      digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      closeValves();
+      strcpy_P(systemStatus, PSTR("Scale disconnected."));
+      break;
+
   }
   processState = state;
   updateDisplay = true;
