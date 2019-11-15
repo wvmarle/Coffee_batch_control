@@ -1,8 +1,8 @@
 uint8_t fillingBin;                                         // Which bin we're currently filling (or going to fill).
+ProcessStates oldState;                                     // For the watchdog timer: keep track of what we were doing, so we can easily recover.
 
 void handleProcess() {
   static uint16_t startWeight;                              // Scale's weight indication at the start of a fill process.
-  static ProcessStates oldState;                            // For the watchdog timer: keep track of what we were doing, so we can easily recover.
   //  static uint32_t lastPrint;
   switch (processState) {
     case SET_WEIGHTS:                                       // User is setting weights and number of batches. Nothing to do here.
@@ -17,6 +17,7 @@ void handleProcess() {
         }
         setState(FILLING_BIN);                              // We start filling the bin.
       }
+      checkWDT();
       break;
 
     case FILLING_BIN:                                       // Open the valves one by one; add material.
@@ -25,6 +26,7 @@ void handleProcess() {
         lastFillCompleteTime = millis();                    // Record when we completed this one.
         setState(FILLING_PAUSE);                            // Take a break for the scale to stabilise.
       }
+      checkWDT();
       break;
 
     case FILLING_PAUSE:                                     // Wait a bit... allow scale to stabilise.
@@ -40,6 +42,7 @@ void handleProcess() {
           setState(DISCHARGE_BATCH);                        // Continue the process: discharge the batch through the discharge valve.
         }
       }
+      checkWDT();
       break;
 
     case DISCHARGE_BATCH:                                   // Empty the thing through the discharge valve.
@@ -71,6 +74,9 @@ void handleProcess() {
       }
   }
 
+}
+
+void checkWDT() {
   if (processState != WDT_TIMEOUT) {
     if (millis() - latestWeightReceivedTime > SCALE_TIMEOUT) { // Watchdog: scale does not send data.
       oldState = processState;                              // Remember what we were doing, so we can recover.
