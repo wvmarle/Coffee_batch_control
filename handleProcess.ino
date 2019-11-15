@@ -2,7 +2,7 @@ uint8_t fillingBin;                                         // Which bin we're c
 
 void handleProcess() {
   static uint16_t startWeight;                              // Scale's weight indication at the start of a fill process.
-  static uint32_t lastPrint;
+//  static uint32_t lastPrint;
   switch (processState) {
     case SET_WEIGHTS:                                       // User is setting weights and number of batches. Nothing to do here.
       break;
@@ -42,9 +42,9 @@ void handleProcess() {
       break;
 
     case DISCHARGE_BATCH:                                   // Empty the thing through the discharge valve.
-      if (millis() - lastPrint > 1000) {
-        lastPrint = millis();
-      }
+//      if (millis() - lastPrint > 1000) {
+//        lastPrint = millis();
+//      }
       if (millis() - lastFillCompleteTime > BATCH_DISCHARGE_TIME) { // If open long enough,
         digitalWrite(dischargeValvePin, LOW);               // Close the valve again.
         nBatch++;                                           // Go to the next batch.
@@ -148,6 +148,8 @@ void setState(ProcessStates state) {
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, HIGH);                   // Switch on the "complete" LED.
       strcpy_P(systemStatus, PSTR("Complete."));
+      isComplete = true;
+      isCompleteTime = millis();
       break;
   }
   processState = state;

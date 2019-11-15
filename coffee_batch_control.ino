@@ -13,6 +13,9 @@ const uint8_t MAX_WEIGHT = 100;                             // Maximum weight th
 const uint8_t MAX_BATCHES = 50;                             // Maximum number of batches that can be set.
 const uint32_t TIMER_DELAY = 90000;                         // For how long to keep the timer high. Set for roasted beans transportation K6
 
+const uint32_t COMPLETE_RELAY_DELAY = 5000;                 // After the batch is complete, wait for this time (in ms) before activating the complete relay.
+const uint32_t COMPLETE_RELAY_ONTIME = 5000;                // When the complete relay is activated, keep it activated for this period.
+
 //#define SHOW_TARGET                                       // Uncomment to not show target weight when filling.
 
 /*******************************************************************************
@@ -47,16 +50,18 @@ const uint8_t LCD_D4_PIN = 29;
 const uint8_t LCD_D5_PIN = 30;
 const uint8_t LCD_D6_PIN = 31;
 const uint8_t LCD_D7_PIN = 32;
-const uint8_t LCD_BACKLIGHT_PIN = 39;                       //No connected on the hardware
+const uint8_t LCD_BACKLIGHT_PIN = 39;                       // No connected on the hardware
 
 
 LiquidCrystal lcd(LCD_RS_PIN, LCD_E_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
 
-const uint8_t INPUT1LEDPin = 48;                          // Pin LED when System ready to receive more green beans.83K1
-const uint8_t completeLEDPin = 49;                        // Pin LED when the all the batches are finish.
+const uint8_t INPUT1LEDPin = 48;                            // Pin LED when System ready to receive more green beans.83K1
+const uint8_t completeLEDPin = 49;                          // Pin LED when the all the batches are finish.
 
-const uint8_t timerInput = 43;                           //INPUT2: Monitor when Gate K is open
-const uint8_t timerOutput = 46;                          //Pin goes high when input 43 is high.This pin stay high for a specific time set.
+const uint8_t timerInput = 43;                              // INPUT2: Monitor when Gate K is open
+const uint8_t timerOutput = 46;                             // Pin goes high when input 43 is high. This pin stay high for a specific time set.
+
+const uint8_t completeRelayPin = 54;                        // Relay goes HIGH after completetion of the batch.
 
 /*******************************************************************************
    Various global variables.
@@ -70,6 +75,8 @@ uint8_t selectedBin = NBINS;                                // The bin selected 
 uint8_t nBatches = 1;                                       // The number of batches to run.
 uint8_t nBatch;                                             // The current batch number.
 uint32_t lastFillCompleteTime;                              // When the last bin filling was completed, or when the discharge started.
+bool isComplete;                                            // Indicate a complete batch has finished.
+uint32_t isCompleteTime;                                    // When the batch finished.
 
 enum ProcessStates {                                        // The various states the process can be in:
   SET_WEIGHTS,                                              // Setting the weight (no batch process active).

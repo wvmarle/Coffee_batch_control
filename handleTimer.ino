@@ -16,4 +16,15 @@ void handleTimer() {
       timerStarted = millis();
     }
   }
+
+  // Relay on, starting 
+  if (isComplete) {
+    if (isCompleteTime - millis() > COMPLETE_RELAY_DELAY) {
+      digitalWrite(completeRelayPin, HIGH);
+    }
+    if (isCompleteTime - millis() > COMPLETE_RELAY_DELAY + COMPLETE_RELAY_ONTIME) {
+      digitalWrite(completeRelayPin, LOW);
+      isComplete = false;
+    }    
+  }
 }
