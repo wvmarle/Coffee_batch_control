@@ -3,6 +3,7 @@ uint32_t timerStarted;
 void initTimer() {
   pinMode(timerInput, INPUT);
   pinMode(timerOutput, OUTPUT);
+  pinMode(dischargeSignalRelayPin, OUTPUT);
   timerStarted = -TIMER_DELAY;                              // Make sure we don't go on right away.
 }
 
@@ -18,13 +19,13 @@ void handleTimer() {
   }
 
   // Relay on, starting 
-  if (isComplete) {
-    if (isCompleteTime - millis() > COMPLETE_RELAY_DELAY) {
-      digitalWrite(completeRelayPin, HIGH);
+  if (isDischarging) {
+    if (isDischargingTime - millis() > DISCHARGE_RELAY_DELAY) {
+      digitalWrite(dischargeSignalRelayPin, HIGH);
     }
-    if (isCompleteTime - millis() > COMPLETE_RELAY_DELAY + COMPLETE_RELAY_ONTIME) {
-      digitalWrite(completeRelayPin, LOW);
-      isComplete = false;
+    if (isDischargingTime - millis() > DISCHARGE_RELAY_DELAY + DISCHARGE_RELAY_ONTIME) {
+      digitalWrite(dischargeSignalRelayPin, LOW);
+      isDischarging = false;
     }    
   }
 }

@@ -13,8 +13,8 @@ const uint8_t MAX_WEIGHT = 100;                             // Maximum weight th
 const uint8_t MAX_BATCHES = 50;                             // Maximum number of batches that can be set.
 const uint32_t TIMER_DELAY = 90000;                         // For how long to keep the timer high. Set for roasted beans transportation K6
 
-const uint32_t COMPLETE_RELAY_DELAY = 5000;                 // After the batch is complete, wait for this time (in ms) before activating the complete relay.
-const uint32_t COMPLETE_RELAY_ONTIME = 5000;                // When the complete relay is activated, keep it activated for this period.
+const uint32_t DISCHARGE_RELAY_DELAY = 5000;                // After the batch is complete, wait for this time (in ms) before activating the complete relay.
+const uint32_t DISCHARGE_RELAY_ONTIME = 5000;               // When the complete relay is activated, keep it activated for this period.
 const uint32_t SCALE_TIMEOUT = 500;                         // If this long (in ms) no weight received, scale is disconnected. It normally sends the weight 10x per second.
 
 //#define SHOW_TARGET                                       // Uncomment to not show target weight when filling.
@@ -62,7 +62,7 @@ const uint8_t completeLEDPin = 49;                          // Pin LED when the 
 const uint8_t timerInput = 43;                              // INPUT2: Monitor when Gate K is open
 const uint8_t timerOutput = 46;                             // Pin goes high when input 43 is high. This pin stay high for a specific time set.
 
-const uint8_t completeRelayPin = 54;                        // Relay goes HIGH after completetion of the batch.
+const uint8_t dischargeSignalRelayPin = 54;                 // Relay goes HIGH for some time as the batch is being discharged.
 
 /*******************************************************************************
    Various global variables.
@@ -76,8 +76,8 @@ uint8_t selectedBin = NBINS;                                // The bin selected 
 uint8_t nBatches = 1;                                       // The number of batches to run.
 uint8_t nBatch;                                             // The current batch number.
 uint32_t lastFillCompleteTime;                              // When the last bin filling was completed, or when the discharge started.
-bool isComplete;                                            // Indicate a complete batch has finished.
-uint32_t isCompleteTime;                                    // When the batch finished.
+bool isDischarging;                                         // Indicate a batch has started discharge.
+uint32_t isDischargingTime;                                 // When the batch started discharge.
 uint32_t latestWeightReceivedTime;                          // Keep track of when we last got a weight.
 
 enum ProcessStates {                                        // The various states the process can be in:

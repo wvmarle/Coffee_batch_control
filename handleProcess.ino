@@ -151,6 +151,8 @@ void setState(ProcessStates state) {
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       sprintf_P(systemStatus, PSTR("Discharge batch %u."), nBatch + 1);
       digitalWrite(dischargeValvePin, HIGH);                // Open the discharge valve (butterfly valve 5).
+      isDischarging = true;
+      isDischargingTime = millis();
       break;
 
     case STOPPED:
@@ -167,8 +169,6 @@ void setState(ProcessStates state) {
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, HIGH);                   // Switch on the "complete" LED.
       strcpy_P(systemStatus, PSTR("Complete."));
-      isComplete = true;
-      isCompleteTime = millis();
       break;
 
     case WDT_TIMEOUT:
