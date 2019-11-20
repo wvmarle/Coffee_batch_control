@@ -1,5 +1,7 @@
 uint8_t fillingBin;                                         // Which bin we're currently filling (or going to fill).
 ProcessStates oldState;                                     // For the watchdog timer: keep track of what we were doing, so we can easily recover.
+uint32_t blinkTimer;                                        // For blinking specific LEDs.
+bool blinkState;                                            // Whether we're blinking on or off.
 
 void handleProcess() {
   static uint16_t startWeight;                              // Scale's weight indication at the start of a fill process.
@@ -69,19 +71,36 @@ void handleProcess() {
       break;
 
     case WDT_TIMEOUT:
+      if (millis() - blinkTimer > BLINK_SPEED) {
+        blinkState = !blinkState;
+        digitalWrite(stopButtonLEDPin, blinkState);
+        blinkTimer = millis();
+      }
       if (millis() - latestWeightReceivedTime < SCALE_TIMEOUT) { // We got communications again.
         setState(oldState);
       }
+      break;
+
+    case WDT_WAITING_FOR_START:
+      checkWDT();
+      if (millis() - blinkTimer > BLINK_SPEED) {
+        blinkState = !blinkState;
+        digitalWrite(startButtonLEDPin, blinkState);
+        blinkTimer = millis();
+      }
+      if (digitalRead(startButtonPin) == LOW) {      // Start button pressed: check if we can start the batch.
+        setState(oldState);
+      }
+      break;
+
   }
 
 }
 
 void checkWDT() {
-  if (processState != WDT_TIMEOUT) {
-    if (millis() - latestWeightReceivedTime > SCALE_TIMEOUT) { // Watchdog: scale does not send data.
-      oldState = processState;                              // Remember what we were doing, so we can recover.
-      setState(WDT_TIMEOUT);                                // Timeout state!
-    }
+  if (millis() - latestWeightReceivedTime > SCALE_TIMEOUT) { // Watchdog: scale does not send data.
+    oldState = processState;                              // Remember what we were doing, so we can recover.
+    setState(WDT_TIMEOUT);                                // Timeout state!
   }
 }
 
@@ -123,14 +142,14 @@ void setState(ProcessStates state) {
       break;
 
     case STANDBY:
-      digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch on the LED of the Start button.
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       sprintf_P(systemStatus, PSTR("Standby batch %u..."), nBatch + 1);
       break;
 
     case FILLING_BIN:
-      digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch on the LED of the Start button.
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       openValve(fillingBin);                                // Open valve for the bin we're going to fill.
@@ -138,7 +157,7 @@ void setState(ProcessStates state) {
       break;
 
     case FILLING_PAUSE:
-      digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch on the LED of the Start button.
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       closeValves();                                        // Close the valves.
@@ -146,7 +165,7 @@ void setState(ProcessStates state) {
       break;
 
     case DISCHARGE_BATCH:
-      digitalWrite(startButtonLEDPin, HIGH);                // Switch off the LED of the Start button.
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch on the LED of the Start button.
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       sprintf_P(systemStatus, PSTR("Discharge batch %u."), nBatch + 1);
@@ -174,9 +193,18 @@ void setState(ProcessStates state) {
     case WDT_TIMEOUT:
       digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
       digitalWrite(stopButtonLEDPin, HIGH);                 // Switch on the LED in the stop button.
-      digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
+      blinkState = HIGH;
+      blinkTimer = millis();
       closeValves();
       strcpy_P(systemStatus, PSTR("Scale disconnected."));
+      break;
+
+    case WDT_WAITING_FOR_START:
+      digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
+      digitalWrite(stopButtonLEDPin, LOW);                  // Switch on the LED in the stop button.
+      blinkState = HIGH;
+      blinkTimer = millis();
+      strcpy_P(systemStatus, PSTR("START to continue."));
       break;
 
   }

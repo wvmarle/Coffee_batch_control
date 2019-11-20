@@ -18,14 +18,13 @@ void handleTimer() {
     }
   }
 
-  // Relay on, starting 
-  if (isDischarging) {
-    if (isDischargingTime - millis() > DISCHARGE_RELAY_DELAY) {
-      digitalWrite(dischargeSignalRelayPin, HIGH);
-    }
-    if (isDischargingTime - millis() > DISCHARGE_RELAY_DELAY + DISCHARGE_RELAY_ONTIME) {
-      digitalWrite(dischargeSignalRelayPin, LOW);
+  if (isDischarging) {                                      // Discharge process started.
+    if (millis() - isDischargingTime > DISCHARGE_RELAY_DELAY + DISCHARGE_RELAY_ONTIME) { // Signal time's up,
+      digitalWrite(dischargeSignalRelayPin, LOW);           // switch off the relay.
       isDischarging = false;
     }    
+    else if (millis() - isDischargingTime > DISCHARGE_RELAY_DELAY) { // After some delay time,
+      digitalWrite(dischargeSignalRelayPin, HIGH);          // switch on the relay.
+    }
   }
 }

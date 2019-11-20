@@ -17,6 +17,8 @@ const uint32_t DISCHARGE_RELAY_DELAY = 5000;                // After the batch i
 const uint32_t DISCHARGE_RELAY_ONTIME = 5000;               // When the complete relay is activated, keep it activated for this period.
 const uint32_t SCALE_TIMEOUT = 500;                         // If this long (in ms) no weight received, scale is disconnected. It normally sends the weight 10x per second.
 
+const uint32_t BLINK_SPEED = 300;                           // Speed of blinking (in ms per half cycle) for blinking the stop or start buttons.
+
 //#define SHOW_TARGET                                       // Uncomment to not show target weight when filling.
 
 /*******************************************************************************
@@ -89,6 +91,7 @@ enum ProcessStates {                                        // The various state
   STOPPED,                                                  // Stop button pressed - process halted.
   COMPLETED,                                                // All batches done; process complete.
   WDT_TIMEOUT,                                              // Watchdog timer timeout: scale disconnected.
+  WDT_WAITING_FOR_START,                                    // Scale reconnected: wait for START button before continuing the process.
 } processState;
 
 void setup() {
