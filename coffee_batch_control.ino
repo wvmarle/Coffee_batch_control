@@ -13,8 +13,8 @@ const uint8_t MAX_WEIGHT = 100;                             // Maximum weight th
 const uint8_t MAX_BATCHES = 50;                             // Maximum number of batches that can be set.
 const uint32_t TIMER_DELAY = 90000;                         // For how long to keep the timer high. Set for roasted beans transportation K6
 
-const uint32_t DISCHARGE_RELAY_DELAY = 5000;                // After the batch is complete, wait for this time (in ms) before activating the complete relay.
-const uint32_t DISCHARGE_RELAY_ONTIME = 5000;               // When the complete relay is activated, keep it activated for this period.
+const uint32_t TIMER_RELAY_DELAY = 5000;                    // Delay for the timer relay.
+const uint32_t TIMER_RELAY_ONTIME = 5000;                   // When the timer relay is activated, keep it activated for this period.
 const uint32_t SCALE_TIMEOUT = 500;                         // If this long (in ms) no weight received, scale is disconnected. It normally sends the weight 10x per second.
 
 const uint32_t BLINK_SPEED = 300;                           // Speed of blinking (in ms per half cycle) for blinking the stop or start buttons.
@@ -29,7 +29,7 @@ const uint32_t BLINK_SPEED = 300;                           // Speed of blinking
  *******************************************************************************/
 const uint8_t NBINS = 4;                                    // Number of bins in the system.
 Encoder setWeightEncoder(2, 3);                             // Rotary encoder for changing variables. At least one of the pins should be one of 2, 3, 20, 21.
-                                                            //Connect a 100 nF capacitor between pin and GND for debouncing!!
+//Connect a 100 nF capacitor between pin and GND for debouncing!!
 const uint8_t encoderPushPin = 4;                           // The encoder's push button - for confirming a selection.
 const uint8_t binSelectionButtonPin[NBINS] = {5, 6, 7, 8};  // The bin selection buttons (active LOW).
 const uint8_t binSelectionLEDPin[NBINS] = {9, 10, 11, 12};  // The LEDs inside the buttons (lit when selected).
@@ -64,8 +64,6 @@ const uint8_t completeLEDPin = 49;                          // Pin LED when the 
 const uint8_t timerInput = 43;                              // INPUT2: Monitor when Gate K is open
 const uint8_t timerOutput = 46;                             // Pin goes high when input 43 is high. This pin stay high for a specific time set.
 
-const uint8_t dischargeSignalRelayPin = 54;                 // Relay goes HIGH for some time as the batch is being discharged.
-
 /*******************************************************************************
    Various global variables.
  *******************************************************************************/
@@ -78,8 +76,6 @@ uint8_t selectedBin = NBINS;                                // The bin selected 
 uint8_t nBatches = 1;                                       // The number of batches to run.
 uint8_t nBatch;                                             // The current batch number.
 uint32_t lastFillCompleteTime;                              // When the last bin filling was completed, or when the discharge started.
-bool isDischarging;                                         // Indicate a batch has started discharge.
-uint32_t isDischargingTime;                                 // When the batch started discharge.
 uint32_t latestWeightReceivedTime;                          // Keep track of when we last got a weight.
 
 enum ProcessStates {                                        // The various states the process can be in:

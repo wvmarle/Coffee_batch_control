@@ -61,11 +61,13 @@ void handleDisplay() {
         break;
 
       case DISCHARGE_BATCH:
-        uint32_t timePassed = millis() - lastFillCompleteTime;
-        uint32_t timeToGo = BATCH_DISCHARGE_TIME - timePassed;
-        uint8_t minutes = timeToGo / 60000ul;
-        uint8_t seconds = uint32_t(timeToGo / 1000ul) % 60;
-        sprintf_P(linebuff, PSTR("%4i kg, #%i/%i %2u:%02u"), scaleWeight, nBatch + 1, nBatches, minutes, seconds);
+        {
+          uint32_t timePassed = millis() - lastFillCompleteTime;
+          uint32_t timeToGo = BATCH_DISCHARGE_TIME - timePassed;
+          uint8_t minutes = timeToGo / 60000ul;
+          uint8_t seconds = uint32_t(timeToGo / 1000ul) % 60;
+          sprintf_P(linebuff, PSTR("%4i kg, #%i/%i %2u:%02u"), scaleWeight, nBatch + 1, nBatches, minutes, seconds);
+        }
         break;
 
       case STOPPED:

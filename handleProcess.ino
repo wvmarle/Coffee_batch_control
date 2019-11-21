@@ -77,7 +77,7 @@ void handleProcess() {
         blinkTimer = millis();
       }
       if (millis() - latestWeightReceivedTime < SCALE_TIMEOUT) { // We got communications again.
-        setState(oldState);
+        setState(WDT_WAITING_FOR_START);
       }
       break;
 
@@ -88,19 +88,17 @@ void handleProcess() {
         digitalWrite(startButtonLEDPin, blinkState);
         blinkTimer = millis();
       }
-      if (digitalRead(startButtonPin) == LOW) {      // Start button pressed: check if we can start the batch.
+      if (digitalRead(startButtonPin) == LOW) {             // Start button pressed: check if we can start the batch.
         setState(oldState);
       }
       break;
-
   }
-
 }
 
 void checkWDT() {
   if (millis() - latestWeightReceivedTime > SCALE_TIMEOUT) { // Watchdog: scale does not send data.
-    oldState = processState;                              // Remember what we were doing, so we can recover.
-    setState(WDT_TIMEOUT);                                // Timeout state!
+    oldState = processState;                                // Remember what we were doing, so we can recover.
+    setState(WDT_TIMEOUT);                                  // Timeout state!
   }
 }
 
@@ -170,8 +168,6 @@ void setState(ProcessStates state) {
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       sprintf_P(systemStatus, PSTR("Discharge batch %u."), nBatch + 1);
       digitalWrite(dischargeValvePin, HIGH);                // Open the discharge valve (butterfly valve 5).
-      isDischarging = true;
-      isDischargingTime = millis();
       break;
 
     case STOPPED:
@@ -192,7 +188,7 @@ void setState(ProcessStates state) {
 
     case WDT_TIMEOUT:
       digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
-      digitalWrite(stopButtonLEDPin, HIGH);                 // Switch on the LED in the stop button.
+      digitalWrite(stopButtonLEDPin, HIGH);                 // Switch on the LED in the stop button - it'll blink.
       blinkState = HIGH;
       blinkTimer = millis();
       closeValves();
@@ -200,8 +196,8 @@ void setState(ProcessStates state) {
       break;
 
     case WDT_WAITING_FOR_START:
-      digitalWrite(startButtonLEDPin, LOW);                 // Switch off the LED of the Start button.
-      digitalWrite(stopButtonLEDPin, LOW);                  // Switch on the LED in the stop button.
+      digitalWrite(startButtonLEDPin, HIGH);                // Switch on the LED of the Start button - it'll blink.
+      digitalWrite(stopButtonLEDPin, HIGH);                 // Switch on the LED in the stop button, showing we're still stopped.
       blinkState = HIGH;
       blinkTimer = millis();
       strcpy_P(systemStatus, PSTR("START to continue."));
