@@ -48,12 +48,10 @@ void handleProcess() {
       break;
 
     case DISCHARGE_BATCH:                                   // Empty the thing through the discharge valve.
-      //      if (millis() - lastPrint > 1000) {
-      //        lastPrint = millis();
-      //      }
       if (millis() - lastFillCompleteTime > BATCH_DISCHARGE_TIME) { // If open long enough,
         digitalWrite(dischargeValvePin, LOW);               // Close the valve again.
         nBatch++;                                           // Go to the next batch.
+        dischargeTimerState = DISCHARGED;                   // A discharge has completed; start the timer thing.
         if (nBatch == nBatches) {                           // If we're done,
           nBatches = 1;                                     // reset the number of batches to 1.
           setState(COMPLETED);                              // set process to "completed" state, and
@@ -168,8 +166,6 @@ void setState(ProcessStates state) {
       digitalWrite(completeLEDPin, LOW);                    // Switch off the "complete" LED.
       sprintf_P(systemStatus, PSTR("Discharge batch %u."), nBatch + 1);
       digitalWrite(dischargeValvePin, HIGH);                // Open the discharge valve (butterfly valve 5).
-//      isDischarging = true;
-//      isDischargingTime = millis();
       break;
 
     case STOPPED:
@@ -186,7 +182,6 @@ void setState(ProcessStates state) {
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, HIGH);                   // Switch on the "complete" LED.
       strcpy_P(systemStatus, PSTR("Complete."));
-      dischargeTimerState = DISCHARGED;
       break;
 
     case WDT_TIMEOUT:

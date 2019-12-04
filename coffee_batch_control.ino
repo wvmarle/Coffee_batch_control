@@ -96,7 +96,7 @@ enum DischargeTimerStates {
   WAIT_DEBOUNCE,                                            // Relay contacts may bounce.
   WAIT_ROASTER_READY,                                       // Wait until INPUT1 goes high, set signal LOW.
   DONE                                                      // Nothing to do here any more.
-} dischargeTimerState;
+} dischargeTimerState = DONE;
 
 void setup() {
   Serial1.begin(9600);
