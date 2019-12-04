@@ -186,8 +186,7 @@ void setState(ProcessStates state) {
       digitalWrite(stopButtonLEDPin, LOW);                  // Switch off the LED in the stop button.
       digitalWrite(completeLEDPin, HIGH);                   // Switch on the "complete" LED.
       strcpy_P(systemStatus, PSTR("Complete."));
-      isDischarging = true;
-      isDischargingTime = millis();
+      dischargeTimerState = DISCHARGED;
       break;
 
     case WDT_TIMEOUT:

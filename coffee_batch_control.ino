@@ -74,8 +74,7 @@ uint8_t selectedBin = NBINS;                                // The bin selected 
 uint8_t nBatches = 1;                                       // The number of batches to run.
 uint8_t nBatch;                                             // The current batch number.
 uint32_t lastFillCompleteTime;                              // When the last bin filling was completed, or when the discharge started.
-bool isDischarging;                                         // Indicate a batch has started discharge.
-uint32_t isDischargingTime;                                 // When the batch started discharge.
+bool isDischarged;                                          // Indicate a batch has started discharge.
 uint32_t latestWeightReceivedTime;                          // Keep track of when we last got a weight.
 
 enum ProcessStates {                                        // The various states the process can be in:
@@ -89,6 +88,15 @@ enum ProcessStates {                                        // The various state
   WDT_TIMEOUT,                                              // Watchdog timer timeout: scale disconnected.
   WDT_WAITING_FOR_START,                                    // Scale reconnected: wait for START button before continuing the process.
 } processState;
+
+enum DischargeTimerStates {
+  DISCHARGED,                                               // Batch completely discharged.
+  DELAY,                                                    // Wait some time before setting the signal HIGH.
+  WAIT_ROASTER_START,                                       // Wait until INPUT1 goes low.
+  WAIT_DEBOUNCE,                                            // Relay contacts may bounce.
+  WAIT_ROASTER_READY,                                       // Wait until INPUT1 goes high, set signal LOW.
+  DONE                                                      // Nothing to do here any more.
+} dischargeTimerState;
 
 void setup() {
   Serial1.begin(9600);

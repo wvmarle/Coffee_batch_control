@@ -17,14 +17,44 @@ void handleTimer() {
       timerStarted = millis();
     }
   }
-  
-  if (isDischarging) {                                      // Discharge process started.
-    if (digitalRead(INPUT1) == HIGH) {                      // When INPUT1 goes HIGH again,
-      digitalWrite(dischargeSignalRelayPin, LOW);           // switch off the relay.
-      isDischarging = false;
-    }
-    else if (millis() - isDischargingTime > DISCHARGE_RELAY_DELAY) { // After some delay time,
-      digitalWrite(dischargeSignalRelayPin, HIGH);          // switch on the relay.
-    }
+  static uint32_t isDischargedTime;
+  switch (dischargeTimerState) {
+    case DISCHARGED:                                        // Batch completely discharged.
+      isDischargedTime = millis();                          // Record when this happened.
+      dischargeTimerState = DELAY;
+      break;
+
+    case DELAY:                                             // Wait some time before setting the signal HIGH.
+      if (millis() - isDischargedTime > DISCHARGE_RELAY_DELAY) { // After some delay time,
+        digitalWrite(dischargeSignalRelayPin, HIGH);        // switch on the relay.
+        dischargeTimerState = WAIT_ROASTER_START;
+      }
+      break;
+
+    case WAIT_ROASTER_START:                                // Wait until INPUT1 goes low.
+      if (digitalRead(INPUT1) == LOW) {
+        dischargeTimerState = WAIT_DEBOUNCE;
+        isDischargedTime = millis();
+      }
+      break;
+
+    case WAIT_DEBOUNCE:                                     // Relay contacts may bounce.
+      if (millis() - isDischargedTime > 100) {              // After some delay time,
+        digitalWrite(dischargeSignalRelayPin, HIGH);        // switch on the relay.
+        dischargeTimerState = WAIT_ROASTER_READY;
+      }
+      break;
+
+    case WAIT_ROASTER_READY:                                // Wait until INPUT1 goes high, set signal LOW.
+      if (digitalRead(INPUT1) == LOW) {
+        digitalWrite(dischargeSignalRelayPin, LOW);         // switch off the relay.
+        dischargeTimerState = DONE;
+        isDischargedTime = millis();
+      }
+      break;
+
+    case DONE:                                              // Nothing to do here any more.
+      break;
+
   }
 }
